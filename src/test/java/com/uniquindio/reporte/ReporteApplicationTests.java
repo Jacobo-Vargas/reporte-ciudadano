@@ -9,5 +9,9 @@ class ReporteApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	@Test
+	void agregarReporte() {
+
+	}
 
 }
