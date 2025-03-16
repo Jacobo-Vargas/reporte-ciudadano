@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.entities.enums.users;
+package com.uniquindio.reporte.model.entities.enums.users;
 
 public enum EnumUserStatus {
     ACTIVE,

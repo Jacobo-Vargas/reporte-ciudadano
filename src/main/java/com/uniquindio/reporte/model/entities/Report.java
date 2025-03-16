@@ -1,6 +1,6 @@
-package com.uniquindio.reporte.entities;
+package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.entities.enums.reports.EnumState;
+import com.uniquindio.reporte.model.entities.enums.reports.EnumState;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;

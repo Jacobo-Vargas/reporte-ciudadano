@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.entities;
+package com.uniquindio.reporte.model.entities;
 
 
 import lombok.Data;

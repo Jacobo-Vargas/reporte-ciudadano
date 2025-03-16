@@ -1,13 +1,12 @@
-package com.uniquindio.reporte.entities;
+package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.entities.enums.users.EnumUserStatus;
-import com.uniquindio.reporte.entities.enums.users.EnumUserType;
+import com.uniquindio.reporte.model.entities.enums.users.EnumUserStatus;
+import com.uniquindio.reporte.model.entities.enums.users.EnumUserType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;

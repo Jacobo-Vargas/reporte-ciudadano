@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.entities.enums.reports;
+package com.uniquindio.reporte.model.entities.enums.reports;
 
 public enum EnumCategoryReport {
 
