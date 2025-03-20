@@ -16,11 +16,16 @@ public class Category {
     @EqualsAndHashCode.Include
     @Id
     ObjectId Id;
+
     String name;
+
     String description;
+
     @Field(name="activation_status")
     Boolean activationStatus;
+
     User user;
+
     @Field(name="category_report")
     EnumCategoryReport categoryReport;
 
