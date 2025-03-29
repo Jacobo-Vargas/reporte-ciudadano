@@ -1,7 +1,8 @@
 package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.model.entities.enums.users.EnumUserStatus;
-import com.uniquindio.reporte.model.entities.enums.users.EnumUserType;
+import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
+import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
+import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -11,6 +12,8 @@ import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -37,7 +40,7 @@ public class User {
     private String firstSurname;
 
     @Field(name = "residence_city")
-    private String residenceCity;
+    private EnumResidenceCity residenceCity;
 
     @Indexed(unique = true) // Evita duplicados en la base de datos
     private String email;
@@ -57,5 +60,8 @@ public class User {
     @DBRef // Para referenciar usuarios seguidores en otra colección
     private List<User> followers;
 
-    private int punctuation;
+    private int score;
+
+    private LocalDate createdAt;
+
 }
