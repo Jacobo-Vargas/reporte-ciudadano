@@ -18,10 +18,24 @@ public class Notification {
 
     @EqualsAndHashCode.Include
     @Id
-    ObjectId Id;
-    String message;
-    @Field(name="shipping_date")
-    LocalDate shippingDate;
-    User user;
-    Report report;
+    @Field(name = "notification_id")
+    private ObjectId notificationId;
+
+    private String message;
+
+    private LocalDate date;
+
+    private String type;
+
+    private  Boolean read;
+
+    @Field(name = "report_id")
+    private ObjectId reportId;
+
+    @Field(name = "user_id")
+    private ObjectId userId;
+
+
+
+
 }

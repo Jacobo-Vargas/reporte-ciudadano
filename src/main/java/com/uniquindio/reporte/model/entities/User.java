@@ -19,25 +19,14 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Document(collection = "users")
-//@CompoundIndex(name = "email_userType_idx", def = "{'email': 1, 'user_type': 1}")
 public class User {
 
     @EqualsAndHashCode.Include
     @Id
     private ObjectId id;
 
-    @Field(name = "first_name")
-    @TextIndexed // Para permitir búsquedas textuales
-    private String firstName;
-
-    @Field(name = "middle_name")
-    private String middleName;
-
-    @Field(name = "second_last_name")
-    private String secondLastName;
-
-    @Field(name = "first_surname")
-    private String firstSurname;
+    @Indexed(unique = true)
+    private String nombre;
 
     @Field(name = "residence_city")
     private EnumResidenceCity residenceCity;
@@ -45,10 +34,11 @@ public class User {
     @Indexed(unique = true) // Evita duplicados en la base de datos
     private String email;
 
-    @Indexed // Mejora búsquedas por teléfono
+    @Indexed (unique = true)// Mejora búsquedas por teléfono
     private String phone;
 
     private String address;
+
     private String password;
 
     @Field(name = "user_type")
@@ -63,5 +53,8 @@ public class User {
     private int score;
 
     private LocalDate createdAt;
+
+    @Field(name="code_validation")
+    private CodeValidation codeValidation;
 
 }

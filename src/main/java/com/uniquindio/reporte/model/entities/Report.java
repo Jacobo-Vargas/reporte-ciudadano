@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.model.enums.reports.EnumState;
+import com.uniquindio.reporte.model.enums.reports.EnumStateReport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -18,26 +18,29 @@ public class Report {
 
     @EqualsAndHashCode.Include
     @Id
-    ObjectId Id;
-    String title;
-    String description;
-    @Field(name="file_document")
-    List<FileDocument> fileDocument;
+    private ObjectId Id;
+
+    private List <HistoryReport> history;
+
     @Field(name="date_creation")
-    LocalDate dateCreation;
-    User user;
-    @Field(name="comments_list")
-    List<Comment> commentsList;
-    @Field(name="list_notificarions")
-    List<Notification> listNotificarions;
-    @Field(name="list_qualifications")
-    List<Qualification> listQualifications;
-    Ubication ubication;
-    EnumState state;
-    Category category;
+    private  LocalDate dateCreation;
 
+    private String description;
 
+    private int counterImportant;
 
+    @Field(name="userId")
+    private ObjectId userId;
 
+    private String title;
+
+    private  Ubication ubication;
+
+    @Field(name="category_id")
+    private ObjectId categoryId;
+
+    private  List<String> photos;
+
+    private  EnumStateReport state;
 
 }

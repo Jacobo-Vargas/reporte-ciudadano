@@ -17,7 +17,7 @@ public interface UserMapper {
     @Mapping(target = "userStatus", constant = "ACTIVE")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDate.now())")
     @Mapping(target = "score", constant = "0")
-    //@Mapping(target = "followers", expression = "java(new ArrayList<>())") // Asegura que la lista no sea null
+    @Mapping(target = "id",source = "documentNumber")
     User toDocument(CreateUserDTO userDTO);
 
     UserDTO toDTO(User user);

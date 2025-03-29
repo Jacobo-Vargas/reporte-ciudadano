@@ -14,10 +14,10 @@ public class Ubication {
 
     @EqualsAndHashCode.Include
     @Id
-    ObjectId Id;
-    float latitude;
-    float longitude;
-    String name;
-    String description;
+    private ObjectId Id;
+    private float latitude;
+    private float longitude;
+    private String name;
+    private String description;
 
 }

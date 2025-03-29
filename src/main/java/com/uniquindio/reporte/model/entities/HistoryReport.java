@@ -1,5 +1,7 @@
 package com.uniquindio.reporte.model.entities;
 
+
+import com.uniquindio.reporte.model.enums.reports.EnumStateReport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -11,16 +13,23 @@ import java.time.LocalDate;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
-@Document(collection = "file_document")
-public class FileDocument {
+@Document(collection = "history_report")
+public class HistoryReport {
 
-    @EqualsAndHashCode.Include
-    @Id
-    ObjectId Id;
-    String url;
-    String name;
-    String description;
-    @Field(name="creation_date")
-    LocalDate creationDate;
-    User user;
+//    @Id
+//    private ObjectId id;
+
+    private String observations;
+
+    @Field(name = "client_Id")
+    private ObjectId clienteId;
+
+    private LocalDate date;
+
+    @Field(name = "enumStateReport")
+    private EnumStateReport enumStateReport;
+
+
+
+
 }

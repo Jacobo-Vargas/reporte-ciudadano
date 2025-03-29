@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.enums.users;
 
 public enum EnumUserType {
-    ADMIN,
+    ADMINISTRATOR,
     CLIENT
 }

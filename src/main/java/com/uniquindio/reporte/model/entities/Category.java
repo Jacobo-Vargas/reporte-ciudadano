@@ -1,6 +1,5 @@
 package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.model.enums.reports.EnumCategoryReport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -15,18 +14,12 @@ public class Category {
 
     @EqualsAndHashCode.Include
     @Id
-    ObjectId Id;
+    private ObjectId Id;
 
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    @Field(name="activation_status")
-    Boolean activationStatus;
-
-    User user;
-
-    @Field(name="category_report")
-    EnumCategoryReport categoryReport;
+    private String icon;
 
 }
