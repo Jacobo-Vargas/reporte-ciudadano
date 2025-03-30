@@ -5,10 +5,8 @@ import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,10 +21,10 @@ public class User {
 
     @EqualsAndHashCode.Include
     @Id
-    private ObjectId id;
+    private String documentNumber;
 
     @Indexed(unique = true)
-    private String nombre;
+    private String name;
 
     @Field(name = "residence_city")
     private EnumResidenceCity residenceCity;
@@ -45,7 +43,7 @@ public class User {
     private EnumUserType userType;
 
     @Field(name = "user_status")
-    private EnumUserStatus userStatus;
+    private EnumUserStatus enumUserStatus;
 
     @DBRef // Para referenciar usuarios seguidores en otra colección
     private List<User> followers;

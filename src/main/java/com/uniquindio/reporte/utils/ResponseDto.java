@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO.utilsDto;
+package com.uniquindio.reporte.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

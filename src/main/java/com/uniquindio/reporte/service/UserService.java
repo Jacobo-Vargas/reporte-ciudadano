@@ -1,6 +1,7 @@
 package com.uniquindio.reporte.service;
 
 import com.uniquindio.reporte.model.DTO.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import org.apache.catalina.startup.ClassLoaderFactory;
 import org.bson.types.ObjectId;
@@ -10,11 +11,11 @@ public interface UserService {
 
     ResponseEntity<?> createUser(CreateUserDTO createUserDTO);
 
-    ResponseEntity<?> updateUser();
+    ResponseEntity<?> updateUser(String documentNumber,UpdateUserDto updateUserDto);
 
-    ResponseEntity<?>changeUserStatus(ObjectId userId, String estado);
+    ResponseEntity<?>changeUserStatus(String userId, String estado);
 
-    ResponseEntity<?>getUser(ObjectId userId);
+    ResponseEntity<?>getUser(String userId);
 
     ResponseEntity<?>getUsers();
 

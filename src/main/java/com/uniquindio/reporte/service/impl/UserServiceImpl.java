@@ -4,19 +4,21 @@ import com.uniquindio.reporte.mapper.UserMapper;
 import com.uniquindio.reporte.model.DTO.CreateUserDTO;
 import com.uniquindio.reporte.model.DTO.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
+import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
 import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.UserService;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,40 +54,71 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateUser(UpdateUserDto updateUserDto) {
-        Optional<User> user = userRepository.findByDocumentNumber(updateUserDto.documentNumber())
-        
+    public ResponseEntity<?> updateUser(String documentNumber,UpdateUserDto updateUserDto) {
+        Optional<User> optionalUser = userRepository.findByDocumentNumber(documentNumber);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(404, "Usuario no encontrado", null));
+        }
         //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
         Optional<User> existingUser = userRepository.findByEmail(updateUserDto.email());
         if (existingUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseDto(409, String.format("El email %s ya está registrado", updateUserDto.email()), null));
         }
-
         User updatedData = userMapper.toDocumentUpdate(updateUserDto);
+        User user = optionalUser.get();
+        // Actualizar solo los campos no nulos del DTO
+        if (updateUserDto.email() != null) {
+            user.setEmail(updateUserDto.email());
+        }
+        if (updateUserDto.phone() != null) {
+            user.setPhone(updateUserDto.phone());
+        }
+        if (updateUserDto.residenceCity() != null) {
+            user.setResidenceCity(EnumResidenceCity.valueOf(updateUserDto.residenceCity().toLowerCase()));
+        }
+        if (updateUserDto.address() != null) {
+            user.setName(updateUserDto.address());
+        }
+        // Guardar cambios en la base de datos
+        userRepository.save(user);
+        return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", user));
+    }
 
-        if (updatedData.getResidenceCity() != null) {
-
-
+    @Override
+    public ResponseEntity<?> changeUserStatus(String documentNumber, String estado) {
+        User user = userRepository.findByDocumentNumber(documentNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+        try {
+            EnumUserStatus nuevoEstado = EnumUserStatus.valueOf(estado.toUpperCase());
+            user.setEnumUserStatus(nuevoEstado);
+            userRepository.save(user);
+            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", user));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "Estado inválido: " + estado, null));
         }
 
-
-        return null;
     }
 
     @Override
-    public ResponseEntity<?> changeUserStatus(ObjectId userId, String estado) {
-        return null;
-    }
+    public ResponseEntity<?> getUser(String documentNumber) {
+        User user= userRepository.findByDocumentNumber(documentNumber)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado"));
+         return ResponseEntity.ok(new ResponseDto(200, "", user));
 
-    @Override
-    public ResponseEntity<?> getUser(ObjectId userId) {
-        return null;
     }
 
     @Override
     public ResponseEntity<?> getUsers() {
-        return null;
+
+        List<User> userList = userRepository.findAll();
+
+        String message = userList.isEmpty() ? "No hay usuarios registrados en el sistema" : "Usuarios encontrados";
+
+        return ResponseEntity.ok(new ResponseDto(200, message, userList));
     }
 }
 

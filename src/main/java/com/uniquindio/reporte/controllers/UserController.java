@@ -1,53 +1,51 @@
 package com.uniquindio.reporte.controllers;
 
 import com.uniquindio.reporte.model.DTO.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.MessageDTO;
+import com.uniquindio.reporte.model.DTO.UpdateUserDto;
 import com.uniquindio.reporte.service.UserService;
-import com.uniquindio.reporte.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.mapstruct.control.MappingControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     //crear usuario
     @PostMapping()
     public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
-        return userServiceImpl.createUser(createUserDTO);
+        return userService.createUser(createUserDTO);
     }
 
     //actualizar usuario
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable ObjectId id) {
-        return ResponseEntity.ok().body("Sus datos han sido modificado con exito");
+    @PutMapping("/{documentNumber}")
+    public ResponseEntity<?> updateUser(@PathVariable String documentNumber, @RequestBody @Valid UpdateUserDto updateUserDto) {
+        return userService.updateUser(documentNumber,updateUserDto);
     }
 
     //  cambiar estado  de usuario
-    @PostMapping("/{id}/estado")
-    public ResponseEntity<?> changeUserStatus(@PathVariable ObjectId id, @RequestParam String estado) {
-        return ResponseEntity.ok().body("La cuenta  ha cambiado de estado");
+    @PutMapping("/{documentNumber}/estado")
+    public ResponseEntity<?> changeUserStatus(@PathVariable String documentNumber, @RequestParam String estado) {
+        return userService.changeUserStatus(documentNumber, estado);
     }
 
     //obtener usuario por id
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable ObjectId id) {
-        return ResponseEntity.ok().body("");
+    @GetMapping("/{documentNumber}")
+    public ResponseEntity<?> getUser(@PathVariable String documentNumber) {
+        return userService.getUser(documentNumber);
     }
 
     // obtener todos los usuarios
     @GetMapping("")
     public ResponseEntity<?> getUsers() {
-        return ResponseEntity.ok().body(" ");
+        return userService.getUsers();
     }
 
 
