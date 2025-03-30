@@ -50,6 +50,7 @@ public class User {
 
     private int score;
 
+    @Field(name = "created_At")
     private LocalDate createdAt;
 
     @Field(name="code_validation")

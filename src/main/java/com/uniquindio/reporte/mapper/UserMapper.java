@@ -2,7 +2,6 @@ package com.uniquindio.reporte.mapper;
 
 import com.uniquindio.reporte.model.DTO.CreateUserDTO;
 import com.uniquindio.reporte.model.DTO.UpdateUserDto;
-import com.uniquindio.reporte.model.DTO.UserDTO;
 import com.uniquindio.reporte.model.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

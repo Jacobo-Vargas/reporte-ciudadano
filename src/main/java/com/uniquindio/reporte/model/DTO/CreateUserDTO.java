@@ -1,8 +1,6 @@
 package com.uniquindio.reporte.model.DTO;
 
-import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
 import jakarta.validation.constraints.*;
-import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Length;
 
 public record CreateUserDTO(
