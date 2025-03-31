@@ -11,6 +11,7 @@ import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.UserService;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedAt(LocalDate.now());
         user.setEnumUserStatus(EnumUserStatus.ACTIVO);
         user.setUserType(EnumUserType.CLIENTE);
+        user.setDocumentNumber(createUserDTO.documentNumber());
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(201, "Usuario creado exitosamente", "ID: " + user.getDocumentNumber()));

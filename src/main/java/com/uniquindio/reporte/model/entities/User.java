@@ -5,6 +5,7 @@ import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -21,6 +22,10 @@ public class User {
 
     @EqualsAndHashCode.Include
     @Id
+    private ObjectId id;
+
+    @Indexed(unique = true)
+    @Field(name = "document_number")
     private String documentNumber;
 
     @Indexed(unique = true)
