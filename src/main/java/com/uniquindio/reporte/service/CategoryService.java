@@ -12,11 +12,11 @@ public interface CategoryService {
 
     ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO);
 
-    ResponseEntity<?> updateCategory(ObjectId Id, UpdateCategoryDTO updateCategoryDTO);
+    ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO);
 
-    ResponseEntity<?>deleteCategory(ObjectId Id);
+    ResponseEntity<?>deleteCategory(String name);
 
-    ResponseEntity<?>getCategory(ObjectId Id);
+    ResponseEntity<?>getCategory(String name);
 
     ResponseEntity<?>getCategories();
 

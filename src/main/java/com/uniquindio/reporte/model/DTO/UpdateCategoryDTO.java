@@ -7,7 +7,7 @@ public record UpdateCategoryDTO(
         @Length(min = 3, max = 50)
         String name,
 
-        @Length(min = 3, max = 50)
+        @Length(min = 3, max = 150)
         String icon,
 
         @Length(min = 3, max = 300)

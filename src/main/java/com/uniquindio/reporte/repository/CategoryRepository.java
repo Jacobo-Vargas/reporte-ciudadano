@@ -6,8 +6,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface CategoryRepository extends MongoRepository<Category, ObjectId> {
+public interface CategoryRepository extends MongoRepository<Category, String> {
 
     Optional<Category> findByName(String name);
 
+    boolean existsByName(String name);
+
+    void deleteByName(String name);
 }

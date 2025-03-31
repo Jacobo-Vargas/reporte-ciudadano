@@ -38,8 +38,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<?> updateCategory(ObjectId id, UpdateCategoryDTO updateCategoryDTO) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
+    public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
+        Optional<Category> optionalCategory = categoryRepository.findByName(name);
         if (optionalCategory.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
@@ -55,18 +55,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<?> deleteCategory(ObjectId id) {
-        if (!categoryRepository.existsById(id)) {
+    public ResponseEntity<?> deleteCategory(String name) {
+        if (!categoryRepository.existsByName(name)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
         }
-        categoryRepository.deleteById(id);
+        categoryRepository.deleteByName(name);
         return ResponseEntity.ok(new ResponseDto(200, "Categoría eliminada correctamente", null));
     }
 
     @Override
-    public ResponseEntity<?> getCategory(ObjectId id) {
-        Optional<Category> category = categoryRepository.findById(id);
+    public ResponseEntity<?> getCategory(String name) {
+        Optional<Category> category = categoryRepository.findByName(name);
         return category.map(value -> ResponseEntity.ok(new ResponseDto(200, "Categoría encontrada", value)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ResponseDto(404, "Categoría no encontrada", null)));

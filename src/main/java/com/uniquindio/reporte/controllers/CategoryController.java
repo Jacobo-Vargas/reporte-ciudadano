@@ -25,25 +25,25 @@ public class CategoryController {
     }
 
     //actualizar categoria
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable ObjectId id, @RequestBody @Valid UpdateCategoryDTO updateCategoryDTO) {
-        return categoryService.updateCategory(id, updateCategoryDTO);
+    @PutMapping("/{name}")
+    public ResponseEntity<?> updateCategory(@PathVariable String name, @RequestBody @Valid UpdateCategoryDTO updateCategoryDTO) {
+        return categoryService.updateCategory(name, updateCategoryDTO);
     }
 
     //eliminar categoria
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable ObjectId id) {
-        return categoryService.deleteCategory(id);
+    @DeleteMapping("/{name}")
+    public ResponseEntity<?> deleteCategory(@PathVariable String name) {
+        return categoryService.deleteCategory(name);
     }
 
     //obtener categoria por id
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCategory(@PathVariable ObjectId id) {
-        return categoryService.getCategory(id);
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getCategory(@PathVariable String name) {
+        return categoryService.getCategory(name);
     }
 
     // obtener todos los usuarios
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> getCategories() {
         return categoryService.getCategories();
     }

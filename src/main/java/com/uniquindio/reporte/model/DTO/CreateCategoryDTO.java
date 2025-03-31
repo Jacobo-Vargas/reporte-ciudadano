@@ -10,7 +10,7 @@ public record CreateCategoryDTO(
         String name,
 
         @NotBlank(message = "Debe registrar al menos un icono")
-        @Length(max = 50)
+        @Length(max = 150)
         String icon,
 
         @NotBlank(message = "Debe registrar al menos un icono")

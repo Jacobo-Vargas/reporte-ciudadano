@@ -42,7 +42,7 @@ public class UserController {
     }
 
     // obtener todos los usuarios
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> getUsers() {
         return userService.getUsers();
     }
