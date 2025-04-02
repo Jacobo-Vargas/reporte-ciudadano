@@ -11,13 +11,9 @@ import org.springframework.http.ResponseEntity;
 public interface CategoryService {
 
     ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO);
-
     ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO);
-
-    ResponseEntity<?>deleteCategory(String name);
-
-    ResponseEntity<?>getCategory(String name);
-
-    ResponseEntity<?>getCategories();
+    ResponseEntity<?> deleteCategory(String name);
+    ResponseEntity<?> getCategory(String name);
+    ResponseEntity<?> getCategories();
 
 }

@@ -18,7 +18,7 @@ public class Report {
 
     @EqualsAndHashCode.Include
     @Id
-    private ObjectId Id;
+    private ObjectId id;
 
     private List <HistoryReport> history;
 

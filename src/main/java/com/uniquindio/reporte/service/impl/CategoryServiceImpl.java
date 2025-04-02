@@ -26,13 +26,22 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO) {
+
         if (categoryRepository.findByName(createCategoryDTO.name()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseDto(409, "La categoría ya existe", null));
         }
 
+
         Category category = categoryMapper.toDocumentCreate(createCategoryDTO);
-        categoryRepository.save(category);
+
+        try {
+            categoryRepository.save(category);
+        } catch (Exception e) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(),"Error interno no se pudo guardar el comentario", null));
+
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(201, "Categoría creada correctamente", category));
     }

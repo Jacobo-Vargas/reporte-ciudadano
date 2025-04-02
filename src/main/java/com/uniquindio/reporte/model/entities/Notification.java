@@ -19,7 +19,7 @@ public class Notification {
     @EqualsAndHashCode.Include
     @Id
     @Field(name = "notification_id")
-    private ObjectId notificationId;
+    private ObjectId id;
 
     private String message;
 

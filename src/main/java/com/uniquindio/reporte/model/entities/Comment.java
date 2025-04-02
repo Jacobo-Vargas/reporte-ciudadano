@@ -21,18 +21,18 @@ public class Comment {
 
     @EqualsAndHashCode.Include
     @Id
-    @Field(name="comment_id")
-    private ObjectId commentId;
+    private ObjectId id;
 
     private String message;
 
-    private LocalDate date;
+    @Field(name = "created_At")
+    private LocalDate createdAt;
 
-    @Field(name = "client_id")
-    private ObjectId clientId;
+    @Field(name = "user_id")
+    private String userId;
 
     @Field(name = "report_id")
-    private ObjectId reportId;
+    private String reportId;
 
 
 

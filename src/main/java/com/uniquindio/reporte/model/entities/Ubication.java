@@ -14,7 +14,7 @@ public class Ubication {
 
     @EqualsAndHashCode.Include
     @Id
-    private ObjectId Id;
+    private ObjectId id;
     private float latitude;
     private float longitude;
     private String name;
