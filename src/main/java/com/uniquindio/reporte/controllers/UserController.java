@@ -5,6 +5,7 @@ import com.uniquindio.reporte.model.DTO.UpdateUserDto;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,18 +24,21 @@ public class UserController {
         return userService.createUser(createUserDTO);
     }
 
+    //FALTA
     //actualizar usuario
-    @PutMapping("/{documentNumber}")
-    public ResponseEntity<?> updateUser(@PathVariable String documentNumber, @RequestBody @Valid UpdateUserDto updateUserDto) {
-        return userService.updateUser(documentNumber,updateUserDto);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDto updateUserDto) {
+        return userService.updateUser( new ObjectId(id),updateUserDto);
     }
 
+    //FALTA
     //  cambiar estado  de usuario
     @PutMapping("/{documentNumber}/estado")
     public ResponseEntity<?> changeUserStatus(@PathVariable String documentNumber, @RequestParam String estado) {
         return userService.changeUserStatus(documentNumber, estado);
     }
 
+    //FALTA
     //obtener usuario por id
     @GetMapping("/{documentNumber}")
     public ResponseEntity<?> getUser(@PathVariable String documentNumber) {

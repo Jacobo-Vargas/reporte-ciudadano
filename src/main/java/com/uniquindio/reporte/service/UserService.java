@@ -11,7 +11,7 @@ public interface UserService {
 
     ResponseEntity<?> createUser(CreateUserDTO createUserDTO);
 
-    ResponseEntity<?> updateUser(String documentNumber,UpdateUserDto updateUserDto);
+    ResponseEntity<?> updateUser(ObjectId id,UpdateUserDto updateUserDto);
 
     ResponseEntity<?>changeUserStatus(String userId, String estado);
 

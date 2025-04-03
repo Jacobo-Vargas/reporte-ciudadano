@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateUser(String documentNumber,UpdateUserDto updateUserDto) {
-        Optional<User> optionalUser = userRepository.findByDocumentNumber(documentNumber);
+    public ResponseEntity<?> updateUser(ObjectId id,UpdateUserDto updateUserDto) {
+        Optional<User> optionalUser = userRepository.findById(id);
 
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -120,7 +120,8 @@ public class UserServiceImpl implements UserService {
 
         String message = userList.isEmpty() ? "No hay usuarios registrados en el sistema" : "Usuarios encontrados";
 
-        return ResponseEntity.ok(new ResponseDto(200, message, userList));
+        List<CreateUserDTO>listDto= userMapper.toDTOList(userList);
+        return ResponseEntity.ok(new ResponseDto(200, message,listDto));
     }
 }
 

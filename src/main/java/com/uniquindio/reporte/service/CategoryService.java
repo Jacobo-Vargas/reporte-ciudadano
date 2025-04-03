@@ -10,11 +10,6 @@ public interface CategoryService {
 
     ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO);
 
-    ResponseEntity<?> updateCategory(ObjectId Id, UpdateCategoryDTO updateCategoryDTO);
-
-    ResponseEntity<?>deleteCategory(ObjectId Id);
-
-    ResponseEntity<?>getCategory(ObjectId Id);
 
     ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO);
 

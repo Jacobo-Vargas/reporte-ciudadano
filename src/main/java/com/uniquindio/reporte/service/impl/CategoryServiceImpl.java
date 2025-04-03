@@ -46,6 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(new ResponseDto(201, "Categoría creada correctamente", category));
     }
 
+
     @Override
     public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
         Optional<Category> optionalCategory = categoryRepository.findByName(name);
