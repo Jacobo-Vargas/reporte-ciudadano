@@ -12,6 +12,7 @@ public interface CategoryService {
 
     ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO);
 
+<<<<<<< Updated upstream
     ResponseEntity<?> updateCategory(ObjectId Id, UpdateCategoryDTO updateCategoryDTO);
 
     ResponseEntity<?>deleteCategory(ObjectId Id);
@@ -19,5 +20,14 @@ public interface CategoryService {
     ResponseEntity<?>getCategory(ObjectId Id);
 
     ResponseEntity<?>getCategories();
+=======
+    ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO);
+
+    ResponseEntity<?> deleteCategory(String name);
+
+    ResponseEntity<?> getCategory(String name);
+
+    ResponseEntity<?> getCategories();
+>>>>>>> Stashed changes
 
 }
