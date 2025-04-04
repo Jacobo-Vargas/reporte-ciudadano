@@ -1,8 +1,8 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.UserMapper;
-import com.uniquindio.reporte.model.DTO.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
 import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public ResponseEntity<?> createUser(CreateUserDTO createUserDTO) {
+    public ResponseEntity<?> createUser(CreateUserDTO createUserDTO) throws Exception {
         //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
         Optional<User> existingUser = userRepository.findByEmailOrDocumentNumber(createUserDTO.email(), createUserDTO.documentNumber());
         if (existingUser.isPresent()) {
@@ -56,8 +57,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateUser(ObjectId id,UpdateUserDto updateUserDto) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public ResponseEntity<?> updateUser(String id, UpdateUserDto updateUserDto) throws Exception {
+        ObjectId objectId = new ObjectId(id);
+        Optional<User> optionalUser = userRepository.findById(objectId);
 
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -79,25 +81,36 @@ public class UserServiceImpl implements UserService {
             user.setPhone(updateUserDto.phone());
         }
         if (updateUserDto.residenceCity() != null) {
-            user.setResidenceCity(EnumResidenceCity.valueOf(updateUserDto.residenceCity().toLowerCase()));
+            try {
+                user.setResidenceCity(EnumResidenceCity.valueOf(updateUserDto.residenceCity().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        String.format("La ciudad de residencia '%s' no es válida. Opciones disponibles: %s",
+                                updateUserDto.residenceCity(),
+                                Arrays.toString(EnumResidenceCity.values()))
+                );
+            }
         }
         if (updateUserDto.address() != null) {
             user.setName(updateUserDto.address());
         }
         // Guardar cambios en la base de datos
-        userRepository.save(user);
-        return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", user));
+        CreateUserDTO userResponse = userMapper.toDTO(userRepository.save(user));
+
+        return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", userResponse));
     }
 
     @Override
-    public ResponseEntity<?> changeUserStatus(String documentNumber, String estado) {
-        User user = userRepository.findByDocumentNumber(documentNumber)
+    public ResponseEntity<?> changeUserStatus(String id, String estado) throws Exception {
+        ObjectId objectId = new ObjectId(id);
+        Optional<User> optionalUser = userRepository.findById(objectId);
+        User user = userRepository.findById(objectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         try {
             EnumUserStatus nuevoEstado = EnumUserStatus.valueOf(estado.toUpperCase());
             user.setEnumUserStatus(nuevoEstado);
-            userRepository.save(user);
-            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", user));
+           CreateUserDTO userReponseDto= userMapper.toDTO( userRepository.save(user));
+            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", userReponseDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseDto(400, "Estado inválido: " + estado, null));
@@ -106,22 +119,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getUser(String documentNumber) {
-        User user= userRepository.findByDocumentNumber(documentNumber)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado"));
-         return ResponseEntity.ok(new ResponseDto(200, "", user));
+    public ResponseEntity<?> getUser(String id) throws Exception {
+        ObjectId objectId = new ObjectId(id);
+        User user = userRepository.findById(objectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        CreateUserDTO userResponse = userMapper.toDTO(user);
+        return ResponseEntity.ok(new ResponseDto(200, "El usuario ha sido encontrado exitosamente", userResponse));
 
     }
 
     @Override
-    public ResponseEntity<?> getUsers() {
+    public ResponseEntity<?> getUsers() throws Exception {
 
         List<User> userList = userRepository.findAll();
 
         String message = userList.isEmpty() ? "No hay usuarios registrados en el sistema" : "Usuarios encontrados";
 
-        List<CreateUserDTO>listDto= userMapper.toDTOList(userList);
-        return ResponseEntity.ok(new ResponseDto(200, message,listDto));
+        List<CreateUserDTO> listDto = userMapper.toDTOList(userList);
+        return ResponseEntity.ok(new ResponseDto(200, message, listDto));
     }
 }
 

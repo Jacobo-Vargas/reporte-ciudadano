@@ -1,8 +1,8 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.CommentMapper;
-import com.uniquindio.reporte.model.DTO.CreateCommentDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import com.uniquindio.reporte.model.entities.Comment;
 import com.uniquindio.reporte.repository.CommentRepository;
 import com.uniquindio.reporte.service.CommentService;

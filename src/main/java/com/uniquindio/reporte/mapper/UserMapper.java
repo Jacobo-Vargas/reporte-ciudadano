@@ -1,10 +1,9 @@
 package com.uniquindio.reporte.mapper;
 
-import com.uniquindio.reporte.model.DTO.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
-import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,7 +22,7 @@ public interface UserMapper {
 
     List<CreateUserDTO> toDTOList(List<User> users);
 
-   // UserDTO toDTO(User user);
+    CreateUserDTO toDTO(User user);
 
 //    void toDocument(EditUserDTO editUserDTO, @MappingTarget User user);
 //

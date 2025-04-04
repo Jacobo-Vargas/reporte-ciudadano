@@ -1,11 +1,12 @@
-package com.uniquindio.reporte.model.DTO;
+package com.uniquindio.reporte.model.DTO.user;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 
 public record UpdateUserDto(
-
+        @NotBlank(message = "Debe Registrar una ciudad de residencia")
         @Length(min = 3, max = 50)
         String residenceCity,
 

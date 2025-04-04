@@ -1,14 +1,13 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.CategoryMapper;
-import com.uniquindio.reporte.model.DTO.CreateCategoryDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCategoryDTO;
+import com.uniquindio.reporte.model.DTO.category.CreateCategoryDTO;
+import com.uniquindio.reporte.model.DTO.category.UpdateCategoryDTO;
 import com.uniquindio.reporte.model.entities.Category;
 import com.uniquindio.reporte.repository.CategoryRepository;
 import com.uniquindio.reporte.service.CategoryService;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO;
+package com.uniquindio.reporte.model.DTO.category;
 
 import org.hibernate.validator.constraints.Length;
 

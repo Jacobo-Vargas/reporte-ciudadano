@@ -1,9 +1,8 @@
 package com.uniquindio.reporte.service;
 
 
-import com.uniquindio.reporte.model.DTO.CreateCategoryDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCategoryDTO;
-import org.bson.types.ObjectId;
+import com.uniquindio.reporte.model.DTO.category.CreateCategoryDTO;
+import com.uniquindio.reporte.model.DTO.category.UpdateCategoryDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface CategoryService {

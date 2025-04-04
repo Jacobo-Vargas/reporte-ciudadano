@@ -1,9 +1,7 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.CreateCategoryDTO;
-import com.uniquindio.reporte.model.DTO.CreateCommentDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCategoryDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import com.uniquindio.reporte.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

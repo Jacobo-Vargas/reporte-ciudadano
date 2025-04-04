@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO;
+package com.uniquindio.reporte.model.DTO.comment;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;

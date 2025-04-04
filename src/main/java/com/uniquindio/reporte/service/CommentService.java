@@ -1,7 +1,7 @@
 package com.uniquindio.reporte.service;
 
-import com.uniquindio.reporte.model.DTO.CreateCommentDTO;
-import com.uniquindio.reporte.model.DTO.UpdateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 

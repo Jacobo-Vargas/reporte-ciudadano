@@ -1,11 +1,10 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,34 +19,34 @@ public class UserController {
 
     //crear usuario
     @PostMapping()
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
         return userService.createUser(createUserDTO);
     }
 
-    //FALTA
+
     //actualizar usuario
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDto updateUserDto) {
-        return userService.updateUser( new ObjectId(id),updateUserDto);
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDto updateUserDto) throws Exception {
+        return userService.updateUser(id,updateUserDto);
     }
 
     //FALTA
     //  cambiar estado  de usuario
-    @PutMapping("/{documentNumber}/estado")
-    public ResponseEntity<?> changeUserStatus(@PathVariable String documentNumber, @RequestParam String estado) {
-        return userService.changeUserStatus(documentNumber, estado);
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> changeUserStatus(@PathVariable String id, @RequestParam String estado) throws Exception {
+        return userService.changeUserStatus(id, estado);
     }
 
-    //FALTA
+
     //obtener usuario por id
-    @GetMapping("/{documentNumber}")
-    public ResponseEntity<?> getUser(@PathVariable String documentNumber) {
-        return userService.getUser(documentNumber);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable String id) throws Exception {
+        return userService.getUser(id);
     }
 
     // obtener todos los usuarios
     @GetMapping()
-    public ResponseEntity<?> getUsers() {
+    public ResponseEntity<?> getUsers() throws Exception {
         return userService.getUsers();
     }
 

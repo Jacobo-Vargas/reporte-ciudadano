@@ -1,23 +1,20 @@
 package com.uniquindio.reporte.service;
 
-import com.uniquindio.reporte.model.DTO.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.UpdateUserDto;
-import com.uniquindio.reporte.model.entities.User;
-import org.apache.catalina.startup.ClassLoaderFactory;
-import org.bson.types.ObjectId;
+import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<?> createUser(CreateUserDTO createUserDTO);
+    ResponseEntity<?> createUser(CreateUserDTO createUserDTO) throws Exception;
 
-    ResponseEntity<?> updateUser(ObjectId id,UpdateUserDto updateUserDto);
+    ResponseEntity<?> updateUser(String id,UpdateUserDto updateUserDto) throws Exception;
 
-    ResponseEntity<?>changeUserStatus(String userId, String estado);
+    ResponseEntity<?>changeUserStatus(String userId, String estado) throws Exception;
 
-    ResponseEntity<?>getUser(String userId);
+    ResponseEntity<?>getUser(String userId) throws Exception;
 
-    ResponseEntity<?>getUsers();
+    ResponseEntity<?>getUsers() throws Exception;
 
 
 }

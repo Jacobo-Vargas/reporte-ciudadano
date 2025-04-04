@@ -1,12 +1,10 @@
-package com.uniquindio.reporte.model.DTO;
+package com.uniquindio.reporte.model.DTO.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.*;
-import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.annotation.Id;
 
 public record CreateUserDTO(
 

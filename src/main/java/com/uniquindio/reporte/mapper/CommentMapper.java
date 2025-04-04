@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.mapper;
 
-import com.uniquindio.reporte.model.DTO.CreateCommentDTO;
+import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
 import com.uniquindio.reporte.model.entities.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
