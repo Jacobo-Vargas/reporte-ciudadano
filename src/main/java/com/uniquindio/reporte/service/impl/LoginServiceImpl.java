@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class LoginService {
+public class LoginService implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
@@ -23,6 +23,7 @@ public class LoginService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @
     public TokenDTO login(LoginRequestDto loginDTO) throws Exception {
         Optional<User> optionalUsuario = userRepository.findByEmail(loginDTO.email());
 
