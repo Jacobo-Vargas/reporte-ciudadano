@@ -39,21 +39,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Configura la seguridad HTTP para la aplicación
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()                      // Para login u otros sin token
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()          // 👈 Permitir creación de usuario
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint( new AutenticacionEntryPoint() ))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new AutenticacionEntryPoint()))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }
+
 
 
     @Bean

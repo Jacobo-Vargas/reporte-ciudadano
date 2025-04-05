@@ -144,5 +144,16 @@ public class UserServiceImpl implements UserService {
         List<CreateUserDTO> listDto = userMapper.toDTOList(userList);
         return ResponseEntity.ok(new ResponseDto(200, message, listDto));
     }
+
+    @Override
+    public ResponseEntity<?> checkIfIdExists(String id) throws Exception {
+        ObjectId objectId = new ObjectId(id);
+        if(userRepository.existsById(objectId)){
+            return ResponseEntity.ok(new ResponseDto(200, "Hemos encontrado al usuario que tiene asociado ese numero de identificación", true));
+        }
+        else {
+            return ResponseEntity.ok(new ResponseDto(200, "Hemos encontrado al usuario que tiene asociado ese numero de identificación", false));
+        }
+    }
 }
 

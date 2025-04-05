@@ -28,6 +28,8 @@ public class User {
     @Field(name = "document_number")
     private String documentNumber;
 
+    private LocalDate dateOfBirth; // DESARROLLO INGE SOTF
+
     @Indexed(unique = true)
     private String name;
 

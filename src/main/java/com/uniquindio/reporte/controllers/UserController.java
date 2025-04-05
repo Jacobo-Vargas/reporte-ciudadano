@@ -50,5 +50,10 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/users/exists/{id}")
+    public ResponseEntity<?>checkIfIdExists(@PathVariable String id) throws Exception {
+        return userService.checkIfIdExists(id);
+    }
+
 
 }

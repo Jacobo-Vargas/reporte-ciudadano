@@ -17,4 +17,5 @@ public interface UserService {
     ResponseEntity<?>getUsers() throws Exception;
 
 
+    ResponseEntity<?> checkIfIdExists(String id) throws Exception;
 }
