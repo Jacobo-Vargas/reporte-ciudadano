@@ -5,6 +5,7 @@ import com.uniquindio.reporte.model.DTO.loggin.TokenDTO;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.security.JWTUtils;
+import com.uniquindio.reporte.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class LoginService implements LoginService {
+public class LoginServiceImpl implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
@@ -23,7 +24,7 @@ public class LoginService implements LoginService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @
+    @Override
     public TokenDTO login(LoginRequestDto loginDTO) throws Exception {
         Optional<User> optionalUsuario = userRepository.findByEmail(loginDTO.email());
 
