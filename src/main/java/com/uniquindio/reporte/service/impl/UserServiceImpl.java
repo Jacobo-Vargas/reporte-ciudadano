@@ -15,6 +15,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -51,6 +54,8 @@ public class UserServiceImpl implements UserService {
         user.setEnumUserStatus(EnumUserStatus.ACTIVO);
         user.setUserType(EnumUserType.CLIENTE);
         user.setDocumentNumber(createUserDTO.documentNumber());
+
+        user.setPassword(passwordEncoder.encode(createUserDTO.password()));
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(201, "Usuario creado exitosamente", "ID: " + user.getDocumentNumber()));
