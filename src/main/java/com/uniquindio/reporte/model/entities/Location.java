@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
-@Document(collection = "ubication")
-public class Ubication {
+@Document(collection = "location")
+public class Location {
 
     @EqualsAndHashCode.Include
     @Id

@@ -1,6 +1,8 @@
 package com.uniquindio.reporte.mapper;
 
+import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
+import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import org.mapstruct.Mapper;
@@ -8,7 +10,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ObjectIdMapperUtil.class})
+@Mapper(componentModel = "spring", uses = {ObjectIdMapperUtil.class, LocationMapper.class})
 public interface ReportMapper {
 
 
@@ -17,4 +19,8 @@ public interface ReportMapper {
     GeneralReportDTO toDTO(Report report);
 
     List<GeneralReportDTO> toListDTO (List<Report> listReport);
+
+    Report toEntity(CreateReportDTO createReportDTO);
+
+    Report toEntity(UpdateReportDTO updateReportDTO);
 }

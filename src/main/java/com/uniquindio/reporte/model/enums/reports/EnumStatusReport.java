@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.enums.reports;
 
-public enum EnumStateReport {
+public enum EnumStatusReport {
     PENDIENTE,
     RESUELTO,
     VERIFICADO,

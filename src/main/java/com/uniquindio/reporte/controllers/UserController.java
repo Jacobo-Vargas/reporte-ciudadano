@@ -18,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     //crear usuario
-    @PostMapping()
+    @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
         return userService.createUser(createUserDTO);
     }

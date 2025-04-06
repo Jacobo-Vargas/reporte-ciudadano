@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.entities;
 
-import com.uniquindio.reporte.model.enums.reports.EnumStateReport;
+import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -34,13 +34,13 @@ public class Report {
 
     private String title;
 
-    private  Ubication ubication;
+    private Location location;
 
     @Field(name="category_id")
     private ObjectId categoryId;
 
     private  List<String> photos;
 
-    private  EnumStateReport state;
+    private EnumStatusReport status;
 
 }

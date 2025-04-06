@@ -4,5 +4,6 @@ public record GeneralReportDTO(String id,
                                String description,
                                String title,
                                String userId,
-                               String state) {
+                               String categoryId,
+                               String status) {
 }
