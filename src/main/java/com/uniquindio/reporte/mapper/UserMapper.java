@@ -1,11 +1,15 @@
 package com.uniquindio.reporte.mapper;
 
+import com.uniquindio.reporte.model.DTO.loggin.TokenDTO;
 import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.ResponseUserDto;
 import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
+import com.uniquindio.reporte.utils.ResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.control.MappingControl;
 
 import java.util.List;
 
@@ -22,7 +26,13 @@ public interface UserMapper {
 
     List<CreateUserDTO> toDTOList(List<User> users);
 
+    List<ResponseUserDto>toDTOListResponse(List<User> users);
+
+    ResponseUserDto toDTOReponse(User user);
+
     CreateUserDTO toDTO(User user);
+
+    TokenDTO toDTOToken(User user);
 
 //    void toDocument(EditUserDTO editUserDTO, @MappingTarget User user);
 //

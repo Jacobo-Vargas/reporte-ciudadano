@@ -1,7 +1,9 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.UserMapper;
+import com.uniquindio.reporte.model.DTO.user.ChangePasswordDto;
 import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.ResponseUserDto;
 import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
@@ -57,8 +59,10 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(createUserDTO.password()));
         userRepository.save(user);
+
+        ResponseUserDto responseUserDto= userMapper.toDTOReponse(user);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Usuario creado exitosamente", "ID: " + user.getDocumentNumber()));
+                .body(new ResponseDto(201, "Usuario creado exitosamente", responseUserDto));
     }
 
     @Override
@@ -100,7 +104,7 @@ public class UserServiceImpl implements UserService {
             user.setName(updateUserDto.address());
         }
         // Guardar cambios en la base de datos
-        CreateUserDTO userResponse = userMapper.toDTO(userRepository.save(user));
+        ResponseUserDto userResponse = userMapper.toDTOReponse(userRepository.save(user));
 
         return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", userResponse));
     }
@@ -114,7 +118,7 @@ public class UserServiceImpl implements UserService {
         try {
             EnumUserStatus nuevoEstado = EnumUserStatus.valueOf(estado.toUpperCase());
             user.setEnumUserStatus(nuevoEstado);
-           CreateUserDTO userReponseDto= userMapper.toDTO( userRepository.save(user));
+           ResponseUserDto userReponseDto= userMapper.toDTOReponse( userRepository.save(user));
             return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", userReponseDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -129,7 +133,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(objectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        CreateUserDTO userResponse = userMapper.toDTO(user);
+        ResponseUserDto userResponse = userMapper.toDTOReponse(user);
         return ResponseEntity.ok(new ResponseDto(200, "El usuario ha sido encontrado exitosamente", userResponse));
 
     }
@@ -141,18 +145,30 @@ public class UserServiceImpl implements UserService {
 
         String message = userList.isEmpty() ? "No hay usuarios registrados en el sistema" : "Usuarios encontrados";
 
-        List<CreateUserDTO> listDto = userMapper.toDTOList(userList);
+        List<ResponseUserDto> listDto = userMapper.toDTOListResponse(userList);
         return ResponseEntity.ok(new ResponseDto(200, message, listDto));
     }
 
     @Override
-    public ResponseEntity<?> checkIfIdExists(String id) throws Exception {
-        ObjectId objectId = new ObjectId(id);
-        if(userRepository.existsById(objectId)){
+    public ResponseEntity<?> checkIfIdExists(String documentNumber) throws Exception {
+        if(userRepository.existsByDocumentNumber(documentNumber)){
             return ResponseEntity.ok(new ResponseDto(200, "Hemos encontrado al usuario que tiene asociado ese numero de identificación", true));
         }
         else {
-            return ResponseEntity.ok(new ResponseDto(200, "Hemos encontrado al usuario que tiene asociado ese numero de identificación", false));
+            return ResponseEntity.ok(new ResponseDto(200, "No hay ningún usuario relacionado con esa identificación", false));
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> changePassword(String documentNumber, ChangePasswordDto changePasswordDto) throws Exception {
+        if(userRepository.existsByDocumentNumber(documentNumber)){
+            User user= userRepository.findByDocumentNumber(documentNumber);
+            user.setPassword(changePasswordDto.newPassword());
+            user.setPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
+            userRepository.save(user);
+            return ResponseEntity.ok(new ResponseDto(200, "Se ha cambiado la clave con existo", true));
+        }else {
+            return ResponseEntity.ok(new ResponseDto(200, "No ha sido posible cambiar la clave", true));
         }
     }
 }

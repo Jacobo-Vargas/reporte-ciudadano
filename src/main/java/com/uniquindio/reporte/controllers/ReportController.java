@@ -8,15 +8,7 @@ import com.uniquindio.reporte.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +26,12 @@ public class ReportController {
     public ResponseEntity<?> updateReport(@RequestBody UpdateReportDTO updateReportDTO) {
         return reportService.updateReport(updateReportDTO);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReportById(@PathVariable ObjectId id) {
+        return reportService.deleteReportById(id);
+    }
+
 
     @PatchMapping("/status")
     public ResponseEntity<?> changeStatusReport(@RequestBody ChangeStatusReportDTO changeStatusReportDTO) {
@@ -55,14 +53,17 @@ public class ReportController {
         return reportService.getReportById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReportById(@PathVariable ObjectId id) {
-        return reportService.deleteReportById(id);
-    }
 
     @GetMapping("/status/{isActive}")
     public ResponseEntity<?> getAllReportsByStatus(@PathVariable boolean isActive) {
         return reportService.getAllReportsByStatus(isActive);
+    }
+
+    //
+    //  cambiar estado  de usuario
+    @PutMapping("/{id}/estado/{idAdmin}")
+    public ResponseEntity<?> changeUserStatusReportAdmin(@PathVariable String id, @RequestParam String estado, @PathVariable String idAdmin) throws Exception {
+        return reportService.changeUserStatusReportAdmin(id,estado,idAdmin);
     }
 }
 

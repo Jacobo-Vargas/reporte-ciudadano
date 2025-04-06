@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
+import com.uniquindio.reporte.model.DTO.user.ChangePasswordDto;
 import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
 import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.service.UserService;
@@ -50,9 +51,14 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @GetMapping("/users/exists/{id}")
-    public ResponseEntity<?>checkIfIdExists(@PathVariable String id) throws Exception {
-        return userService.checkIfIdExists(id);
+    @GetMapping("/exists/{documentNumber}")
+    public ResponseEntity<?>checkIfIdExists(@PathVariable String documentNumber) throws Exception {
+        return userService.checkIfIdExists(documentNumber);
+    }
+
+    @PostMapping("/changePassword/{documentNumber}")
+    public ResponseEntity<?>changePassword(@PathVariable String documentNumber, @RequestBody @Valid ChangePasswordDto changePasswordDto) throws Exception {
+        return  userService.changePassword(documentNumber, changePasswordDto);
     }
 
 

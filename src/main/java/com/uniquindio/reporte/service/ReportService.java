@@ -24,4 +24,6 @@ public interface ReportService {
     ResponseEntity<?> deleteReportById(ObjectId id);
 
     ResponseEntity<?> getAllReportsByStatus(boolean isActive);
+
+    ResponseEntity<?> changeUserStatusReportAdmin(String id, String estado, String idAdmin)throws Exception;
 }
