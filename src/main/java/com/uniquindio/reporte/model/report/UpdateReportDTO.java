@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO.report;
+package com.uniquindio.reporte.model.report;
 
 import com.uniquindio.reporte.model.DTO.location.LocationDTO;
 

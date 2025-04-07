@@ -4,6 +4,7 @@ import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
+import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 
@@ -17,13 +18,13 @@ public interface ReportService {
 
     ResponseEntity<?> getReport();
 
-    ResponseEntity<?> saveReport(Report report);
+    void saveReport(Report report);
 
-    ResponseEntity<?> getReportById(ObjectId id);
+    ResponseEntity<?> getReportById(String id);
 
-    ResponseEntity<?> deleteReportById(ObjectId id);
+    ResponseEntity<?> deleteReportById(String id);
 
-    ResponseEntity<?> getAllReportsByStatus(boolean isActive);
+    ResponseEntity<?> getAllReportsByStatus(EnumStatusReport statusReport);
 
     ResponseEntity<?> changeUserStatusReportAdmin(String id, String estado, String idAdmin)throws Exception;
 }
