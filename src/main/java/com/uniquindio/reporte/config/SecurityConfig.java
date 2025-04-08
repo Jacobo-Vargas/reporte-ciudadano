@@ -44,7 +44,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/auth/**").permitAll()                      // Para login u otros sin token
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/users").permitAll()// Para login u otros sin token
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()          // 👈 Permitir creación de usuario
                         .anyRequest().authenticated()
                 )
