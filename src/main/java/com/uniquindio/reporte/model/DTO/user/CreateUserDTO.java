@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.model.DTO.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -20,6 +21,7 @@ public record CreateUserDTO(
         String documentNumber,
 
         @NotNull
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
         LocalDate dateOfBirth,
 
         @NotBlank(message = "Debe registrar un pais")
