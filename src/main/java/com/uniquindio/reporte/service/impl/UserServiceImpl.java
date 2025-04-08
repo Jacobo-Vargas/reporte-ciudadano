@@ -75,11 +75,11 @@ public class UserServiceImpl implements UserService {
                     .body(new ResponseDto(404, "Usuario no encontrado", null));
         }
         //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
-        Optional<User> existingUser = userRepository.findByEmail(updateUserDto.email());
-        if (existingUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseDto(409, String.format("El email %s ya está registrado", updateUserDto.email()), null));
-        }
+//        Optional<User> existingUser = userRepository.findByEmail(updateUserDto.email());
+//        if (existingUser.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(new ResponseDto(409, String.format("El email %s ya está registrado", updateUserDto.email()), null));
+//        }
         User updatedData = userMapper.toDocumentUpdate(updateUserDto);
         User user = optionalUser.get();
         // Actualizar solo los campos no nulos del DTO
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (updateUserDto.address() != null) {
-            user.setName(updateUserDto.address());
+            user.setAddress(updateUserDto.address());
         }
         // Guardar cambios en la base de datos
         ResponseUserDto userResponse = userMapper.toDTOReponse(userRepository.save(user));
