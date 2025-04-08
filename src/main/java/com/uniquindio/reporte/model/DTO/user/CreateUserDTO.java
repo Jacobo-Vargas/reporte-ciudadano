@@ -21,7 +21,7 @@ public record CreateUserDTO(
         String documentNumber,
 
         @NotNull
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
         LocalDate dateOfBirth,
 
         @NotBlank(message = "Debe registrar un pais")
