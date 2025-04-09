@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users").permitAll() // Crear usuario
                         .requestMatchers(HttpMethod.GET, "/users/exists/**").permitAll() // ✔ Sin token
                         .requestMatchers(HttpMethod.POST, "/users/changePassword/**").permitAll() // ✔ Sin token
+                        .requestMatchers(HttpMethod.GET, "/users/document/**").permitAll() // ✔ Sin token
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new AutenticacionEntryPoint()))
