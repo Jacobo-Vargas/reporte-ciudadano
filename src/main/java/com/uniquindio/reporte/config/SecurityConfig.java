@@ -45,8 +45,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/users").permitAll()// Para login u otros sin token
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()          // 👈 Permitir creación de usuario
+                        .requestMatchers("/users").permitAll() // Para login u otros sin token
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll() // Crear usuario
+                        .requestMatchers(HttpMethod.GET, "/users/exists/**").permitAll() // ✔ Sin token
+                        .requestMatchers(HttpMethod.POST, "/users/changePassword/**").permitAll() // ✔ Sin token
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new AutenticacionEntryPoint()))
