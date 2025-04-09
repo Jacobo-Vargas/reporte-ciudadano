@@ -16,7 +16,7 @@ public class Category {
 
     @EqualsAndHashCode.Include
     @Id
-    private ObjectId Id;
+    private ObjectId id;
 
     private String name;
 

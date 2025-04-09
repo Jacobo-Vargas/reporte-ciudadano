@@ -34,6 +34,4 @@ public class Comment {
     @Field(name = "report_id")
     private String reportId;
 
-
-
 }

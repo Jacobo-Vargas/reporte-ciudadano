@@ -25,21 +25,21 @@ public class CommentController {
     }
 
     //actualizar comentario
-    @PutMapping("/{Id}")
-    public ResponseEntity<?> updateComment(@PathVariable ObjectId Id, @RequestBody @Valid UpdateCommentDTO updateCommentDTO) {
-        return commentService.updateComment(Id, updateCommentDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable ObjectId id, @RequestBody @Valid UpdateCommentDTO updateCommentDTO) {
+        return commentService.updateComment(id, updateCommentDTO);
     }
 
     //eliminar comentario
-    @DeleteMapping("/{Id}")
-    public ResponseEntity<?> deleteComment(@PathVariable ObjectId Id) {
-        return commentService.deleteComment(Id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable ObjectId id) {
+        return commentService.deleteComment(id);
     }
 
     //obtener comentario por id
-    @GetMapping("/{Id}")
-    public ResponseEntity<?> getComment(@PathVariable ObjectId Id) {
-        return commentService.getComment(Id);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getComment(@PathVariable ObjectId id) {
+        return commentService.getComment(id);
     }
 
 

@@ -1,12 +1,13 @@
 package com.uniquindio.reporte.model.entities;
 
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDate;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
@@ -16,11 +17,12 @@ public class Qualification {
     @EqualsAndHashCode.Include
     @Id
     @Field(name = "qualification_id")
-    private ObjectId qualificationId;
+    private ObjectId id;
 
     private int reaction;
 
-    private User user;
+    @Field(name = "date_creation")
+    private LocalDate dateCreation;
 
     @Field(name ="report_id")
     private ObjectId reportId;

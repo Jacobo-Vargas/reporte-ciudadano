@@ -1,20 +1,19 @@
 package com.uniquindio.reporte.service.impl;
 
-import com.uniquindio.reporte.mapper.CategoryMapper;
-import com.uniquindio.reporte.model.DTO.category.CreateCategoryDTO;
-import com.uniquindio.reporte.model.DTO.category.UpdateCategoryDTO;
-import com.uniquindio.reporte.model.entities.Category;
-import com.uniquindio.reporte.repository.CategoryRepository;
-import com.uniquindio.reporte.service.CategoryService;
-import com.uniquindio.reporte.utils.ResponseDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import com.uniquindio.reporte.utils.ResponseDto;
+import com.uniquindio.reporte.mapper.CategoryMapper;
+import com.uniquindio.reporte.model.entities.Category;
+import com.uniquindio.reporte.service.CategoryService;
+import com.uniquindio.reporte.repository.CategoryRepository;
+import com.uniquindio.reporte.model.DTO.category.CreateCategoryDTO;
+import com.uniquindio.reporte.model.DTO.category.UpdateCategoryDTO;
+import com.uniquindio.reporte.model.DTO.category.GeneralCategoryDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -32,23 +31,27 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
 
-        Category category = categoryMapper.toDocumentCreate(createCategoryDTO);
+        Category category = categoryMapper.toEntity(createCategoryDTO);
+
 
         try {
             categoryRepository.save(category);
         } catch (Exception e) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(),"Error interno no se pudo guardar el comentario", null));
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno, no se pudo guardar la categoría", null));
 
         }
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Categoría creada correctamente", category));
+                .body(new ResponseDto(201, "Categoría creada correctamente", categoryMapper.toDTO(category)));
     }
 
 
     @Override
     public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
         Optional<Category> optionalCategory = categoryRepository.findByName(name);
+
         if (optionalCategory.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
@@ -60,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (updateCategoryDTO.description() != null) category.setDescription(updateCategoryDTO.description());
 
         categoryRepository.save(category);
-        return ResponseEntity.ok(new ResponseDto(200, "Categoría actualizada correctamente", category));
+        return ResponseEntity.ok(new ResponseDto(200, "Categoría actualizada correctamente", categoryMapper.toDTO(category)));
     }
 
     @Override
@@ -87,6 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return ResponseEntity.ok(new ResponseDto(200, "Lista de categorías obtenida", categories));
+        List<GeneralCategoryDTO> categoriesR = categoryMapper.toListDTO(categories);
+        return ResponseEntity.ok(new ResponseDto(200, "Lista de categorías obtenida", categoriesR));
     }
 }

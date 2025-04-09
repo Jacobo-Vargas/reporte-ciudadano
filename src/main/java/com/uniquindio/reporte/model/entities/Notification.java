@@ -35,7 +35,4 @@ public class Notification {
     @Field(name = "user_id")
     private ObjectId userId;
 
-
-
-
 }
