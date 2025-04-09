@@ -5,8 +5,6 @@ import com.uniquindio.reporte.mapper.QualificationMapper;
 import com.uniquindio.reporte.model.DTO.qualification.CreateQualificationDTO;
 import com.uniquindio.reporte.model.DTO.qualification.UpdateQualificationDTO;
 import com.uniquindio.reporte.model.entities.Qualification;
-import com.uniquindio.reporte.model.entities.Report;
-import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.repository.QualificationRepository;
 import com.uniquindio.reporte.service.QualificationService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
