@@ -16,4 +16,5 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
 
     Optional<User> findByDocumentNumber(String documentNumber);
 
+    Optional<Object> findById(String userId);
 }

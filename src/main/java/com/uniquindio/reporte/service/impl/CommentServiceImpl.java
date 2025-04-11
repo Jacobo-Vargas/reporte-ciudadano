@@ -4,9 +4,15 @@ import com.uniquindio.reporte.mapper.CommentMapper;
 import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
 import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import com.uniquindio.reporte.model.entities.Comment;
+import com.uniquindio.reporte.model.entities.Report;
+import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.repository.CommentRepository;
+import com.uniquindio.reporte.repository.ReportRepository;
+import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.CommentService;
 import com.uniquindio.reporte.service.EmailService;
+import com.uniquindio.reporte.service.ReportService;
+import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -24,6 +30,9 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
+    private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
 
 
 
@@ -35,6 +44,21 @@ public class CommentServiceImpl implements CommentService {
         try {
 
             commentRepository.save(comment);
+            Report reporte = reportRepository.findById(ObjectIdMapperUtil.map(comment.getReportId())).orElse(null);
+            if (reporte != null) {
+                User creador = userRepository.findById(reporte.getUserId()).orElse(null);
+                User autorComentario = (User) userRepository.findById(comment.getUserId()).orElse(null);
+
+                if (creador != null && autorComentario != null) {
+                    emailService.enviarNotificacionComentario(
+                            creador.getEmail(),
+                            reporte.getTitle(),
+                            comment.getMessage(),  // o como sea que se llame el contenido
+                            autorComentario.getName()
+                    );
+                }
+            }
+
 
         }catch (Exception e){
 

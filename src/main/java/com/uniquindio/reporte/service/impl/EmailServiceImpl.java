@@ -21,42 +21,35 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // 🔹 Enviar texto simple
+
     @Override
-    public ResponseEntity<?> enviarTextoPlano(String destinatario, String asunto, String mensaje) {
+    public void enviarConfirmacionCreacionReporte(String destinatario, String tituloReporte) {
+        String asunto = "Tu reporte ha sido creado con éxito";
+        String cuerpo = "¡Gracias por usar nuestra plataforma!\n\n" +
+                "Hemos recibido tu reporte titulado: \"" + tituloReporte + "\".\n" +
+                "Nuestro equipo lo revisará lo más pronto posible.\n\n" +
+                "Puedes hacer seguimiento desde tu perfil.";
+
         SimpleMailMessage correo = new SimpleMailMessage();
         correo.setTo(destinatario);
         correo.setSubject(asunto);
-        correo.setText(mensaje);
+        correo.setText(cuerpo);
         mailSender.send(correo);
-        return null;
     }
 
-    // 🔹 Enviar HTML
     @Override
-    public ResponseEntity<?> enviarHtml(String destinatario, String asunto, String contenidoHtml) throws MessagingException {
-        MimeMessage mensaje = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
-        helper.setTo(destinatario);
-        helper.setSubject(asunto);
-        helper.setText(contenidoHtml, true); // true = HTML
-        mailSender.send(mensaje);
-        return null;
+    public void enviarNotificacionComentario(String destinatario, String tituloReporte, String contenidoComentario, String autorComentario) {
+        String asunto = "Nuevo comentario en tu reporte";
+        String cuerpo = "¡Hola!\n\n" +
+                "El usuario \"" + autorComentario + "\" ha comentado en tu reporte titulado: \"" + tituloReporte + "\"\n\n" +
+                "Comentario: \"" + contenidoComentario + "\"\n\n" +
+                "Ingresa a la plataforma para ver más detalles.";
+
+        SimpleMailMessage correo = new SimpleMailMessage();
+        correo.setTo(destinatario);
+        correo.setSubject(asunto);
+        correo.setText(cuerpo);
+        mailSender.send(correo);
     }
 
-    // 🔹 Enviar con archivo adjunto
-    @Override
-    public ResponseEntity<?> enviarConAdjunto(String destinatario, String asunto, String texto, String rutaArchivo) throws MessagingException {
-        MimeMessage mensaje = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mensaje, true);
-        helper.setTo(destinatario);
-        helper.setSubject(asunto);
-        helper.setText(texto);
-
-        FileSystemResource archivo = new FileSystemResource(new File(rutaArchivo));
-        helper.addAttachment(archivo.getFilename(), archivo);
-
-        mailSender.send(mensaje);
-        return null;
-    }
 }

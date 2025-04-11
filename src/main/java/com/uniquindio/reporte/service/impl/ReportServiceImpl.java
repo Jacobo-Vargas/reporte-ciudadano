@@ -2,13 +2,17 @@ package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.ReportMapper;
+import com.uniquindio.reporte.mapper.UserMapper;
 import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
+import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.repository.ReportRepository;
+import com.uniquindio.reporte.repository.UserRepository;
+import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.ReportService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import com.uniquindio.reporte.utils.ResponseDto;
@@ -30,6 +34,8 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final ReportMapper reportMapper;
     private final LocationServiceImpl locationService;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Override
     public ResponseEntity<?> createReport(CreateReportDTO createReportDTO) {
@@ -41,6 +47,15 @@ public class ReportServiceImpl implements ReportService {
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
 
         saveReport(report);
+
+        User creador = userRepository.findById(report.getUserId()).orElse(null);
+        if (creador != null) {
+            emailService.enviarConfirmacionCreacionReporte(
+                    creador.getEmail(),
+                    report.getTitle()
+            );
+        }
+
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Reporte guardado con éxito", reportMapper.toDTO(report)));
