@@ -6,9 +6,11 @@ import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import com.uniquindio.reporte.model.entities.Comment;
 import com.uniquindio.reporte.repository.CommentRepository;
 import com.uniquindio.reporte.service.CommentService;
+import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
-/*
-
- */
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
