@@ -3,6 +3,7 @@ package com.uniquindio.reporte.service.impl;
 import com.uniquindio.reporte.model.DTO.loggin.LoginRequestDto;
 import com.uniquindio.reporte.model.DTO.loggin.TokenDTO;
 import com.uniquindio.reporte.model.entities.User;
+import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.security.JWTUtils;
 import com.uniquindio.reporte.service.LoginService;
@@ -36,7 +37,11 @@ public class LoginServiceImpl implements LoginService {
 
         // Verificar si la contraseña es correcta
         if (!passwordEncoder.matches(loginDTO.password(), user.getPassword())) {
-            throw new Exception("Credenciales incorrectas");
+            throw new Exception("Credenciales incorrectas.");
+        }
+
+        if (EnumUserStatus.ACTIVO.name().equals(user.getEnumUserStatus().name())) {
+            throw new Exception("La cuenta no esta activa, estado: ".concat(user.getEnumUserStatus().name()));
         }
 
         String token = jwtUtils.generateToken(user.getId().toString(), crearClaims(user));

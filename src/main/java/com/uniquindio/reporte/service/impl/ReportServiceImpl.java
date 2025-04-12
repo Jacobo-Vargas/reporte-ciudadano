@@ -2,7 +2,6 @@ package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.ReportMapper;
-import com.uniquindio.reporte.mapper.UserMapper;
 import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
@@ -10,11 +9,13 @@ import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
+import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.ReportService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
+import com.uniquindio.reporte.utils.OperationUtils;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +87,15 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ResponseEntity<?> changeStatusReport(ChangeStatusReportDTO changeStatusReportDTO) {
         try {
+
+            boolean flag = validateChangeStatus(changeStatusReportDTO.status());
+
+            if (flag) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseDto(200, "No tiene permisos suficientes para cambiar el estado de el reporte.", null));
+
+            }
+
             Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.status()))));
             report.setStatus(EnumStatusReport.valueOf(changeStatusReportDTO.status()));
             log.info("Actualizando reporte a nuevo estado {}", report.getStatus().name());
@@ -152,5 +162,27 @@ public class ReportServiceImpl implements ReportService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Datos obtenidos con éxito", dataFiltered));
 
+    }
+
+    @Override
+    public ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException {
+
+        Report report = reportRepository.findById(ObjectIdMapperUtil.map(reportId)).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(reportId))));
+        report.setCounterImportant(isImportant ? report.getCounterImportant() + 1 : report.getCounterImportant() -1 );
+        saveReport(report);
+        ResponseDto responseDto = new ResponseDto(HttpStatus.OK.value(), "El reporte se actualizó con éxito", reportMapper.toDTO(report));
+        return ResponseEntity.status(responseDto.getCodigo()).body(responseDto);
+    }
+
+
+    private boolean validateChangeStatus(String newStatus) {
+        boolean flagAdmin = OperationUtils.validateUserByRol(EnumUserType.ADMINISTRADOR.name());
+
+        // no es admin solo puede resuelto
+        if (!flagAdmin && !EnumStatusReport.RESUELTO.name().equals(newStatus)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
