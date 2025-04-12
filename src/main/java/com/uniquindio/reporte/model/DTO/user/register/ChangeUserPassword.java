@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO.user;
+package com.uniquindio.reporte.model.DTO.user.register;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

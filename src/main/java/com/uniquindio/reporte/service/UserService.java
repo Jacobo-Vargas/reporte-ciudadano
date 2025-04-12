@@ -1,14 +1,17 @@
 package com.uniquindio.reporte.service;
 
-import com.uniquindio.reporte.model.DTO.user.*;
-import jakarta.validation.Valid;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
+import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<?> createUser(CreateUserDTO createUserDTO) throws Exception;
+    ResponseEntity<?> sendCodeConfirmation(CreateUserDTO createUserDTO) throws Exception;
 
-    ResponseEntity<?> updateUser(String id,UpdateUserDto updateUserDto) throws Exception;
+    ResponseEntity<?> updateUser(String id, UpdateUserDto updateUserDto) throws Exception;
 
     ResponseEntity<?>changeUserStatus(ChangeUserStatusDto changeUserStatusDto) throws Exception;
 
@@ -19,4 +22,6 @@ public interface UserService {
     ResponseEntity<?> verifyEmailAndDocumentNumber(VerifyEmailAndDocumentNumberUserDto verifyEmailAndDocumentNumberUserDto);
 
     ResponseEntity<?> changeUserPassword(ChangeUserPassword changeUserPassword) throws  Exception;
+
+    ResponseEntity<?> createUser(CreateUserDTO createUserDTO, String code)throws Exception;
 }

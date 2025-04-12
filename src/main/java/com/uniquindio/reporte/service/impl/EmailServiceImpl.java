@@ -52,4 +52,31 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(correo);
     }
 
+    @Override
+    public void sendCodeVerifaction(String recipient, String code) throws Exception {
+        String subject = "Código de verificación para registro";
+        String body = """
+            ¡Hola!
+
+            Gracias por registrarte en nuestra plataforma.
+
+            Para completar tu registro, por favor ingresa el siguiente código de verificación:
+
+            👉 CÓDIGO: %s
+
+            Este código expirará en 1 minuto por motivos de seguridad.
+
+            Si tú no solicitaste este código, puedes ignorar este mensaje.
+
+            Saludos,
+            El equipo de soporte.
+            """.formatted(code);
+
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo(recipient);
+        email.setSubject(subject);
+        email.setText(body);
+        mailSender.send(email);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO.user;
+package com.uniquindio.reporte.model.DTO.user.register;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

@@ -40,7 +40,7 @@ public class LoginServiceImpl implements LoginService {
             throw new Exception("Credenciales incorrectas.");
         }
 
-        if (EnumUserStatus.ACTIVO.name().equals(user.getEnumUserStatus().name())) {
+        if (!EnumUserStatus.ACTIVO.name().equals(user.getEnumUserStatus().name())) {
             throw new Exception("La cuenta no esta activa, estado: ".concat(user.getEnumUserStatus().name()));
         }
 

@@ -58,7 +58,7 @@ public class User {
     @Field(name = "created_At")
     private LocalDate createdAt;
 
-    @Field(name="code_validation")
-    private CodeValidation codeValidation;
+    @Field(name="email_request")
+    private EmailRequest emailRequest;
 
 }

@@ -1,9 +1,9 @@
 package com.uniquindio.reporte.mapper;
 
-import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.user.ResponseUserDto;
-import com.uniquindio.reporte.model.DTO.user.ResponseUserStatusDto;
-import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.response.ResponseUserDto;
+import com.uniquindio.reporte.model.DTO.user.response.ResponseUserStatusDto;
+import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import org.mapstruct.Mapper;

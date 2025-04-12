@@ -1,14 +1,10 @@
-package com.uniquindio.reporte.model.DTO.user;
+package com.uniquindio.reporte.model.DTO.user.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.uniquindio.reporte.model.entities.CodeValidation;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
 import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
-import org.bson.types.ObjectId;
 
 import java.time.LocalDate;
 import java.util.List;

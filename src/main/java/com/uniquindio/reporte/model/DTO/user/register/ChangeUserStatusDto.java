@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.model.DTO.user;
+package com.uniquindio.reporte.model.DTO.user.register;
 
 import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,10 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.user.*;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
+import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +22,16 @@ public class UserController {
 
     //crear usuario
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
-        return userService.createUser(createUserDTO);
+    public ResponseEntity<?> sendCodeConfirmation(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
+        return userService.sendCodeConfirmation(createUserDTO);
     }
+    //crear usuario
+    @PostMapping("/createUser/{code}")
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO, @PathVariable  String code) throws Exception {
+        return userService.createUser(createUserDTO,code);
+    }
+
+
 
 
     //actualizar usuario
@@ -59,6 +70,8 @@ public class UserController {
         return  userService.changeUserPassword(changeUserPassword);
 
     }
+
+
 
 
 

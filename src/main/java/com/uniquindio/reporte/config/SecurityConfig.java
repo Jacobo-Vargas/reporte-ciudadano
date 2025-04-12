@@ -47,12 +47,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/users/register").permitAll()
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/users/createUser/**").permitAll()  // <-- esta línea nueva
                         .requestMatchers("/users/verifyEmailAndDocumentNumber").permitAll()
                         .requestMatchers("/users/changeUserPassword").permitAll()
                         .requestMatchers("/dev/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated(
+                ))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint( new AutenticacionEntryPoint() ))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
