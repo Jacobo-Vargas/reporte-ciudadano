@@ -30,7 +30,7 @@ public class UserController {
         return userService.updateUser(id,updateUserDto);
     }
 
-    //FALTA
+
     //  cambiar estado  de usuario
     @PutMapping("/{id}/estado")
     public ResponseEntity<?> changeUserStatus(@PathVariable String id, @RequestParam String estado) throws Exception {
@@ -49,6 +49,9 @@ public class UserController {
     public ResponseEntity<?> getUsers() throws Exception {
         return userService.getUsers();
     }
+
+
+
 
 
 }

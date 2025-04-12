@@ -72,10 +72,19 @@ public class UserServiceImpl implements UserService {
         }
         //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
         Optional<User> existingUser = userRepository.findByEmail(updateUserDto.email());
+
+
         if (existingUser.isPresent()) {
+            // válida si el email ingresado es el mismo que tiene regsitrado a la cuenta, no lo almacene
+            if(existingUser.get().getEmail().equals(updateUserDto.email())){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseDto(409,String.format("El email %s  ya se encuentra asociado a esta cuenta, deje el campo email vació",updateUserDto.email()),null));
+            }
+            //Entonces el email está asociado a otra cuenta
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseDto(409, String.format("El email %s ya está registrado", updateUserDto.email()), null));
         }
+
         User updatedData = userMapper.toDocumentUpdate(updateUserDto);
         User user = optionalUser.get();
         // Actualizar solo los campos no nulos del DTO
