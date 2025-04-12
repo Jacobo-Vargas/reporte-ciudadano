@@ -24,29 +24,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO) {
-
-        if (categoryRepository.findByName(createCategoryDTO.name()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseDto(409, "La categoría ya existe", null));
-        }
-
-
         Category category = categoryMapper.toEntity(createCategoryDTO);
-
-
+        
         try {
-            categoryRepository.save(category);
-        } catch (Exception e) {
+                categoryRepository.save(category);
+            } catch (Exception e) {
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno, no se pudo guardar la categoría", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno, no se pudo guardar la categoría", null));
 
-        }
+            }
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Categoría creada correctamente", categoryMapper.toDTO(category)));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(201, "Categoría creada correctamente", categoryMapper.toDTO(category)));
     }
-
 
     @Override
     public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
