@@ -2,7 +2,6 @@ package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.ReportMapper;
-import com.uniquindio.reporte.mapper.UserMapper;
 import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
@@ -165,6 +164,15 @@ public class ReportServiceImpl implements ReportService {
 
     }
 
+    @Override
+    public ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException {
+
+        Report report = reportRepository.findById(ObjectIdMapperUtil.map(reportId)).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(reportId))));
+        report.setCounterImportant(isImportant ? report.getCounterImportant() + 1 : report.getCounterImportant() -1 );
+        saveReport(report);
+        ResponseDto responseDto = new ResponseDto(HttpStatus.OK.value(), "El reporte se actualizó con éxito", reportMapper.toDTO(report));
+        return ResponseEntity.status(responseDto.getCodigo()).body(responseDto);
+    }
 
 
     private boolean validateChangeStatus(String newStatus) {

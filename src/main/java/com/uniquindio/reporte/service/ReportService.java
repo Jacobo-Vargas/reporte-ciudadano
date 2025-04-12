@@ -25,4 +25,6 @@ public interface ReportService {
     ResponseEntity<?> deleteReportById(String id);
 
     ResponseEntity<?> getAllReportsByStatus(EnumStatusReport statusReport);
+
+    ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException;
 }

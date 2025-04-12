@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
+import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
@@ -58,6 +59,11 @@ public class ReportController {
     @GetMapping("/status")
     public ResponseEntity<?> getAllReportsByStatus(@RequestParam String status) {
         return reportService.getAllReportsByStatus(EnumStatusReport.valueOf(status));
+    }
+
+    @PutMapping("/markImportant")
+    public ResponseEntity<?> markAsImportant(@RequestParam String reportId, @RequestParam boolean isImportant) throws NotFoundException {
+        return reportService.markAsImportant(reportId, isImportant);
     }
 }
 
