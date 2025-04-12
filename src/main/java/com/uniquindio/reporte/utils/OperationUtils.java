@@ -43,6 +43,6 @@ public class OperationUtils {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        return roles.stream().anyMatch(item -> item.equals(rol));
+        return roles.stream().anyMatch(item -> item.equals("ROLE_".concat(rol)));
     }
 }
