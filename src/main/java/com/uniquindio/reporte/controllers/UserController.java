@@ -1,8 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.user.ChangeUserStatusDto;
-import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.*;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +49,16 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/verifyEmailAndDocumentNumber")
+    public  ResponseEntity<?> verifyEmailAndDocumentNumber(@RequestBody @Valid VerifyEmailAndDocumentNumberUserDto verifyEmailAndDocumentNumberUserDto)throws  Exception{
+        return userService.verifyEmailAndDocumentNumber(verifyEmailAndDocumentNumberUserDto);
+    }
+
+    @PutMapping("/changeUserPassword")
+    public  ResponseEntity<?>changeUserPassword(@RequestBody @Valid ChangeUserPassword changeUserPassword)throws  Exception{
+        return  userService.changeUserPassword(changeUserPassword);
+
+    }
 
 
 

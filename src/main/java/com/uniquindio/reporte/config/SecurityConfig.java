@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/users/verifyEmailAndDocumentNumber").permitAll()
+                        .requestMatchers("/users/changeUserPassword").permitAll()
                         .requestMatchers("/dev/**").permitAll()
                         .anyRequest().authenticated()
                 )

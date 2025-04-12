@@ -11,10 +11,12 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, ObjectId> {
 
     Optional<User> findByEmailOrDocumentNumber(String email, String documentNumber);
+    Optional<User> findByEmailAndDocumentNumber(String email, String documentNumber);
 
     Optional<User> findByEmail(String email);
 
     Optional<User> findByDocumentNumber(String documentNumber);
 
     Optional<Object> findById(String userId);
+
 }

@@ -55,9 +55,9 @@ public class UserServiceImpl implements UserService {
         user.setDocumentNumber(createUserDTO.documentNumber());
 
         user.setPassword(passwordEncoder.encode(createUserDTO.password()));
-        ResponseUserDto responseUserDto= userMapper.toDtoResponseUser(userRepository.save(user));
+        ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(userRepository.save(user));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Usuario creado exitosamente",  responseUserDto));
+                .body(new ResponseDto(201, "Usuario creado exitosamente", responseUserDto));
     }
 
     @Override
@@ -66,9 +66,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(objectId);
 
         if (optionalUser.isEmpty()) {
-            if(optionalUser.get().getEmail().equals(updateUserDto.email())){
+            if (optionalUser.get().getEmail().equals(updateUserDto.email())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseDto(409,String.format("El email %s  ya se encuntra asociado a esta cuenta",updateUserDto.email()),null));
+                        .body(new ResponseDto(409, String.format("El email %s  ya se encuntra asociado a esta cuenta", updateUserDto.email()), null));
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Usuario no encontrado", null));
@@ -79,9 +79,9 @@ public class UserServiceImpl implements UserService {
 
         if (existingUser.isPresent()) {
             // válida si el email ingresado es el mismo que tiene regsitrado a la cuenta, no lo almacene
-            if(existingUser.get().getEmail().equals(updateUserDto.email())){
+            if (existingUser.get().getEmail().equals(updateUserDto.email())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseDto(409,String.format("El email %s  ya se encuentra asociado a esta cuenta, deje el campo email vació",updateUserDto.email()),null));
+                        .body(new ResponseDto(409, String.format("El email %s  ya se encuentra asociado a esta cuenta, deje el campo email vació", updateUserDto.email()), null));
             }
             //Entonces el email está asociado a otra cuenta
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -91,13 +91,13 @@ public class UserServiceImpl implements UserService {
         User updatedData = userMapper.toDocumentUpdate(updateUserDto);
         User user = optionalUser.get();
         // Actualizar solo los campos no nulos del DTO
-        if (updatedData.getEmail()!=null && !updateUserDto.email().isEmpty()) {
+        if (updatedData.getEmail() != null && !updateUserDto.email().isEmpty()) {
             user.setEmail(updateUserDto.email());
         }
         if (updateUserDto.phone() != null || !updateUserDto.phone().isEmpty()) {
             user.setPhone(updateUserDto.phone());
         }
-        if (updateUserDto.residenceCity() != null && !updatedData.getResidenceCity().describeConstable().isEmpty() ) {
+        if (updateUserDto.residenceCity() != null && !updatedData.getResidenceCity().describeConstable().isEmpty()) {
             try {
                 user.setResidenceCity(EnumResidenceCity.valueOf(updateUserDto.residenceCity().toUpperCase()));
             } catch (IllegalArgumentException e) {
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
             user.setAddress(updateUserDto.address());
         }
         // Guardar cambios en la base de datos
-         ResponseUserDto responseUserDto= userMapper.toDtoResponseUser(userRepository.save(user));
+        ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(userRepository.save(user));
         return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", responseUserDto));
     }
 
@@ -124,13 +124,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         try {
             EnumUserStatus nuevoEstado = changeUserStatusDto.newStatus();
-            if(user.getEnumUserStatus().equals(nuevoEstado)){
+            if (user.getEnumUserStatus().equals(nuevoEstado)) {
                 ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseDto(409,String.format("La cuenta ya se encuentra en este estado %s",nuevoEstado),null));
+                        .body(new ResponseDto(409, String.format("La cuenta ya se encuentra en este estado %s", nuevoEstado), null));
             }
             user.setEnumUserStatus(nuevoEstado);
-           ResponseUserStatusDto responseUserStatusDto = userMapper.toDocumentResponseUserStatus(userRepository.save(user));
-            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente",responseUserStatusDto));// cambiar respuesta
+            ResponseUserStatusDto responseUserStatusDto = userMapper.toDocumentResponseUserStatus(userRepository.save(user));
+            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", responseUserStatusDto));// cambiar respuesta
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseDto(400, "Estado inválido: " + changeUserStatusDto.newStatus(), null));
@@ -155,6 +155,41 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(new ResponseDto(200, message, listDto));
     }
 
-    
+
+    //metodo para cambiar la clave
+    @Override
+    public ResponseEntity<?> verifyEmailAndDocumentNumber(VerifyEmailAndDocumentNumberUserDto verifyEmailAndDocumentNumberUserDto) {
+        Optional<User> isExisting = userRepository.findByEmailAndDocumentNumber(verifyEmailAndDocumentNumberUserDto.email(), verifyEmailAndDocumentNumberUserDto.documentNumber());
+        if (isExisting.isPresent()) {
+            ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(isExisting.get());
+            return ResponseEntity.ok(new ResponseDto(200, "Las credenciales están relacionado con un suario", responseUserDto));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "Las credenciales no están relacionados a un usuario registrado en el sistema", false));
+        }
+    }
+
+    //cambiar clave usuario
+    @Override
+    public ResponseEntity<?> changeUserPassword(ChangeUserPassword changeUserPassword) throws Exception {
+
+        Optional<User> isExisting = userRepository.findByDocumentNumber(changeUserPassword.documentNumber());
+        if (isExisting.isPresent()) {
+            if (!isExisting.get().getPassword().equals(changeUserPassword.password())) {
+                User user = isExisting.get();
+                user.setPassword(changeUserPassword.password());
+                ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(user);
+                return ResponseEntity.ok(new ResponseDto(200, "La contraseña se ha cambiado exitosamente", responseUserDto));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(409, "La contraseña debe ser diferente a la ultima registrada", false));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "La cédula no coincide con la verificación", false));
+        }
+    }
+
+
 }
 
