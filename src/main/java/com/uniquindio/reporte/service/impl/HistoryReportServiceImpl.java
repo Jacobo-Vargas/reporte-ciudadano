@@ -85,4 +85,9 @@ public class HistoryReportServiceImpl implements HistoryReportService {
                     .body(new ResponseDto(404, e.getMessage(), null));
         }
     }
+
+    public HistoryReport save(CreateHistoryReportDTO dto) {
+        HistoryReport entity = historyReportMapper.toEntity(dto);
+        return historyReportRepository.save(entity);
+    }
 }

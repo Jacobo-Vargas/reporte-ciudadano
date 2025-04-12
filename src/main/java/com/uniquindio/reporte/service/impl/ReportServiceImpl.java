@@ -2,10 +2,12 @@ package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.ReportMapper;
+import com.uniquindio.reporte.model.DTO.historyReport.CreateHistoryReportDTO;
 import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
+import com.uniquindio.reporte.model.entities.HistoryReport;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
@@ -13,6 +15,7 @@ import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.EmailService;
+import com.uniquindio.reporte.service.HistoryReportService;
 import com.uniquindio.reporte.service.ReportService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import com.uniquindio.reporte.utils.OperationUtils;
@@ -25,7 +28,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,6 +44,7 @@ public class ReportServiceImpl implements ReportService {
     private final LocationServiceImpl locationService;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final HistoryReportService historyReportService;
 
     @Override
     public ResponseEntity<?> createReport(CreateReportDTO createReportDTO) {
@@ -47,8 +55,12 @@ public class ReportServiceImpl implements ReportService {
         report.setDateCreation(LocalDate.now());
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
 
-        saveReport(report);
+        HistoryReport historyReport = historyReportService.save(new CreateHistoryReportDTO("Estado inicial, creado y pendiente de validación", createReportDTO.userId(), EnumStatusReport.PENDIENTE));
+        List<HistoryReport> list = new ArrayList<>(1);
+        list.add(historyReport);
 
+        report.setHistory(list);
+        saveReport(report);
         User creador = userRepository.findById(report.getUserId()).orElse(null);
         if (creador != null) {
             emailService.enviarConfirmacionCreacionReporte(
@@ -66,8 +78,16 @@ public class ReportServiceImpl implements ReportService {
     public ResponseEntity<?> updateReport(UpdateReportDTO updateReportDTO) {
 
         try {
-            Report report = reportRepository.findById(new ObjectId(updateReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(updateReportDTO.id())));
 
+            boolean flag = validateChangeStatus(updateReportDTO.status());
+
+            if (flag) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseDto(200, "No tiene permisos suficientes para cambiar el estado de el reporte.", null));
+
+            }
+
+            Report report = reportRepository.findById(new ObjectId(updateReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(updateReportDTO.id())));
             report.setStatus(EnumStatusReport.valueOf(updateReportDTO.status()));
             report.setLocation(locationService.saveLocation(updateReportDTO.location()));
             report.setTitle(updateReportDTO.title());
@@ -87,7 +107,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ResponseEntity<?> changeStatusReport(ChangeStatusReportDTO changeStatusReportDTO) {
         try {
-
+            Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.id()))));
             boolean flag = validateChangeStatus(changeStatusReportDTO.status());
 
             if (flag) {
@@ -96,7 +116,29 @@ public class ReportServiceImpl implements ReportService {
 
             }
 
-            Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.status()))));
+            // if changes is equals for RESUELTO status
+            if (OperationUtils.validateUserByRol(EnumUserType.CLIENTE.name()) && EnumStatusReport.RESUELTO.name().equals(changeStatusReportDTO.status())) {
+
+                List<HistoryReport> historyReportList = report.getHistory()
+                        .stream()
+                        .sorted(Comparator.comparing(HistoryReport::getDate))
+                        .toList();
+
+                if (!historyReportList.isEmpty()) {
+                    boolean flagHistory = historyReportList.get(0).getEnumStatusReport().name().equals(EnumStatusReport.RECHAZADO.name());
+                    final LocalDate lastStatus = historyReportList.get(0).getDate();
+                    if (flagHistory && ChronoUnit.DAYS.between(lastStatus, LocalDate.now()) > 5) {
+                        return ResponseEntity.status(HttpStatus.GONE)
+                                .body(new ResponseDto(HttpStatus.GONE.value(), "Ups!, has tardado mucho tiempo en revisarlo, ya no es posible realizar esta acción.", null));
+                    }
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "No se pudo obtener la última actualización de estado", null));
+                }
+            }
+            List<HistoryReport> list = report.getHistory();
+            list.add(historyReportService.save(new CreateHistoryReportDTO(changeStatusReportDTO.observation(), ObjectIdMapperUtil.map(report.getUserId()), EnumStatusReport.valueOf(changeStatusReportDTO.status()))));
+            report.setHistory(list);
             report.setStatus(EnumStatusReport.valueOf(changeStatusReportDTO.status()));
             log.info("Actualizando reporte a nuevo estado {}", report.getStatus().name());
             saveReport(report);
