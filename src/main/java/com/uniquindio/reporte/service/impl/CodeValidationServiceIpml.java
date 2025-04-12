@@ -20,7 +20,7 @@ public class CodeValidationServiceIpml {
             codeValidation.setCode(code);
             if (email != null || !email.isEmpty()) {
                 codeValidation.setEmailUser(email);
-                codeValidation.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+                codeValidation.setExpiresAt(LocalDateTime.now().plusMinutes(15));
                 return codeValidationRepository.save(codeValidation);
             }
         }
