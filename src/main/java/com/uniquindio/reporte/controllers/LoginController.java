@@ -5,6 +5,7 @@ import com.uniquindio.reporte.model.DTO.loggin.TokenDTO;
 import com.uniquindio.reporte.service.impl.LoginServiceImpl;
 import com.uniquindio.reporte.utils.ResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,10 @@ public class LoginController {
             return ResponseEntity.ok(token);
         } catch (Exception e) {
 
-            ResponseDto responseDto = new ResponseDto(401, e.getMessage(), null);
+            ResponseDto responseDto = new ResponseDto(HttpStatus.UNAUTHORIZED.value(), e.getMessage(), null);
             return ResponseEntity
-                    .status(401)
-                    .body("Error al iniciar sesión: " + e.getMessage());
+                    .status(responseDto.getCodigo())
+                    .body(responseDto);
         }
     }
 }
