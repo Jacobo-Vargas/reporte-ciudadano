@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
+import com.uniquindio.reporte.model.DTO.user.ChangeUserStatusDto;
 import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
 import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.service.UserService;
@@ -32,9 +33,9 @@ public class UserController {
 
 
     //  cambiar estado  de usuario
-    @PutMapping("/{id}/estado")
-    public ResponseEntity<?> changeUserStatus(@PathVariable String id, @RequestParam String estado) throws Exception {
-        return userService.changeUserStatus(id, estado);
+    @PutMapping("status")
+    public ResponseEntity<?> changeUserStatus(@RequestBody @Valid ChangeUserStatusDto changeUserStatusDto) throws Exception {
+        return userService.changeUserStatus(changeUserStatusDto);
     }
 
 

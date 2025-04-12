@@ -1,6 +1,8 @@
 package com.uniquindio.reporte.mapper;
 
 import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.ResponseUserDto;
+import com.uniquindio.reporte.model.DTO.user.ResponseUserStatusDto;
 import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
@@ -20,20 +22,15 @@ public interface UserMapper {
 
     User toDocumentUpdate(UpdateUserDto updateUserDto);
 
-    List<CreateUserDTO> toDTOList(List<User> users);
-
     CreateUserDTO toDTO(User user);
 
-//    void toDocument(EditUserDTO editUserDTO, @MappingTarget User user);
-//
-//    List<User> toDocumentList(List<CreateUserDTO> users);
-//
+    ResponseUserDto toDtoResponseUser(User user);
 
-//Métodos para mapear ObjectId a String y viceversa
-//    default String map(ObjectId value) {
-//       return value != null ? value.toString() : null;}
+    List<ResponseUserDto>toDTOListReponseUser(List<User> users);
 
-//    default ObjectId map(String value) {
-//        return value != null ? new ObjectId(value) : null;
-//    }
+    ResponseUserStatusDto toDocumentResponseUserStatus(User user);
+
+
+
+
 }

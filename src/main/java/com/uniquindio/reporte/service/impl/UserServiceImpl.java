@@ -1,8 +1,7 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.UserMapper;
-import com.uniquindio.reporte.model.DTO.user.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.user.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.*;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.users.EnumResidenceCity;
 import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
@@ -56,9 +55,9 @@ public class UserServiceImpl implements UserService {
         user.setDocumentNumber(createUserDTO.documentNumber());
 
         user.setPassword(passwordEncoder.encode(createUserDTO.password()));
-        userRepository.save(user);
+        ResponseUserDto responseUserDto= userMapper.toDtoResponseUser(userRepository.save(user));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Usuario creado exitosamente", "ID: " + user.getDocumentNumber()));
+                .body(new ResponseDto(201, "Usuario creado exitosamente",  responseUserDto));
     }
 
     @Override
@@ -67,6 +66,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(objectId);
 
         if (optionalUser.isEmpty()) {
+            if(optionalUser.get().getEmail().equals(updateUserDto.email())){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseDto(409,String.format("El email %s  ya se encuntra asociado a esta cuenta",updateUserDto.email()),null));
+            }
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Usuario no encontrado", null));
         }
@@ -88,13 +91,13 @@ public class UserServiceImpl implements UserService {
         User updatedData = userMapper.toDocumentUpdate(updateUserDto);
         User user = optionalUser.get();
         // Actualizar solo los campos no nulos del DTO
-        if (updateUserDto.email() != null) {
+        if (updatedData.getEmail()!=null && !updateUserDto.email().isEmpty()) {
             user.setEmail(updateUserDto.email());
         }
-        if (updateUserDto.phone() != null) {
+        if (updateUserDto.phone() != null || !updateUserDto.phone().isEmpty()) {
             user.setPhone(updateUserDto.phone());
         }
-        if (updateUserDto.residenceCity() != null) {
+        if (updateUserDto.residenceCity() != null && !updatedData.getResidenceCity().describeConstable().isEmpty() ) {
             try {
                 user.setResidenceCity(EnumResidenceCity.valueOf(updateUserDto.residenceCity().toUpperCase()));
             } catch (IllegalArgumentException e) {
@@ -105,31 +108,33 @@ public class UserServiceImpl implements UserService {
                 );
             }
         }
-        if (updateUserDto.address() != null) {
-            user.setName(updateUserDto.address());
+        if (updateUserDto.address() != null && !updatedData.getAddress().isEmpty()) {
+            user.setAddress(updateUserDto.address());
         }
         // Guardar cambios en la base de datos
-        CreateUserDTO userResponse = userMapper.toDTO(userRepository.save(user));
-
-        return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", userResponse));
+         ResponseUserDto responseUserDto= userMapper.toDtoResponseUser(userRepository.save(user));
+        return ResponseEntity.ok(new ResponseDto(200, "Usuario actualizado exitosamente", responseUserDto));
     }
 
     @Override
-    public ResponseEntity<?> changeUserStatus(String id, String estado) throws Exception {
-        ObjectId objectId = new ObjectId(id);
+    public ResponseEntity<?> changeUserStatus(ChangeUserStatusDto changeUserStatusDto) throws Exception {
+        ObjectId objectId = new ObjectId(changeUserStatusDto.userId());
         Optional<User> optionalUser = userRepository.findById(objectId);
         User user = userRepository.findById(objectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         try {
-            EnumUserStatus nuevoEstado = EnumUserStatus.valueOf(estado.toUpperCase());
+            EnumUserStatus nuevoEstado = changeUserStatusDto.newStatus();
+            if(user.getEnumUserStatus().equals(nuevoEstado)){
+                ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseDto(409,String.format("La cuenta ya se encuentra en este estado %s",nuevoEstado),null));
+            }
             user.setEnumUserStatus(nuevoEstado);
-           CreateUserDTO userReponseDto= userMapper.toDTO( userRepository.save(user));
-            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente", userReponseDto));
+           ResponseUserStatusDto responseUserStatusDto = userMapper.toDocumentResponseUserStatus(userRepository.save(user));
+            return ResponseEntity.ok(new ResponseDto(200, "Estado actualizado exitosamente",responseUserStatusDto));// cambiar respuesta
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseDto(400, "Estado inválido: " + estado, null));
+                    .body(new ResponseDto(400, "Estado inválido: " + changeUserStatusDto.newStatus(), null));
         }
-
     }
 
     @Override
@@ -137,21 +142,19 @@ public class UserServiceImpl implements UserService {
         ObjectId objectId = new ObjectId(id);
         User user = userRepository.findById(objectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
-
-        CreateUserDTO userResponse = userMapper.toDTO(user);
-        return ResponseEntity.ok(new ResponseDto(200, "El usuario ha sido encontrado exitosamente", userResponse));
+        ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(user);
+        return ResponseEntity.ok(new ResponseDto(200, "El usuario ha sido encontrado exitosamente", responseUserDto));
 
     }
 
     @Override
     public ResponseEntity<?> getUsers() throws Exception {
-
         List<User> userList = userRepository.findAll();
-
         String message = userList.isEmpty() ? "No hay usuarios registrados en el sistema" : "Usuarios encontrados";
-
-        List<CreateUserDTO> listDto = userMapper.toDTOList(userList);
+        List<ResponseUserDto> listDto = userMapper.toDTOListReponseUser(userList);
         return ResponseEntity.ok(new ResponseDto(200, message, listDto));
     }
+
+    
 }
 
