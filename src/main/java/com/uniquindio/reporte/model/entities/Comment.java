@@ -1,6 +1,7 @@
 package com.uniquindio.reporte.model.entities;
 
 
+import com.uniquindio.reporte.model.enums.EnumStatusComment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
@@ -34,4 +35,5 @@ public class Comment {
     @Field(name = "report_id")
     private String reportId;
 
+    private EnumStatusComment status;
 }

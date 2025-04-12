@@ -2,6 +2,8 @@ package com.uniquindio.reporte.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.uniquindio.reporte.model.enums.EnumStatusCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,11 +43,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
-        Optional<Category> optionalCategory = categoryRepository.findByName(name);
+        Optional<Category> optionalCategory = categoryRepository.findByName(name)
+                .filter(c -> c.getStatus() != EnumStatusCategory.ELIMINADO);
 
         if (optionalCategory.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseDto(404, "Categoría no encontrada", null));
+                    .body(new ResponseDto(404, "Categoría no encontrada o eliminada", null));
         }
 
         Category category = optionalCategory.get();
@@ -59,17 +62,29 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> deleteCategory(String name) {
-        if (!categoryRepository.existsByName(name)) {
+        Optional<Category> optionalCategory = categoryRepository.findByName(name);
+        if (optionalCategory.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
         }
-        categoryRepository.deleteByName(name);
+
+        try {
+            Category category = optionalCategory.get();
+            category.setStatus(EnumStatusCategory.ELIMINADO);
+            categoryRepository.save(category);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno, no se pudo eliminar lógicamente", null));
+        }
+
         return ResponseEntity.ok(new ResponseDto(200, "Categoría eliminada correctamente", null));
     }
 
     @Override
     public ResponseEntity<?> getCategory(String name) {
-        Optional<Category> category = categoryRepository.findByName(name);
+        Optional<Category> category = categoryRepository.findByName(name)
+                .filter(c -> c.getStatus() != EnumStatusCategory.ELIMINADO);
+
         return category.map(value -> ResponseEntity.ok(new ResponseDto(200, "Categoría encontrada", value)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ResponseDto(404, "Categoría no encontrada", null)));
@@ -77,10 +92,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> getCategories() {
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll()
+                .stream()
+                .filter(c -> c.getStatus() == EnumStatusCategory.ACTIVO)
+                .toList();
+
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
+
         List<GeneralCategoryDTO> categoriesR = categoryMapper.toListDTO(categories);
         return ResponseEntity.ok(new ResponseDto(200, "Lista de categorías obtenida", categoriesR));
     }
