@@ -17,4 +17,6 @@ public interface CategoryService {
     ResponseEntity<?> getCategory(String name);
 
     ResponseEntity<?> getCategories();
+
+    ResponseEntity<?> getCategoriesByStatus(String status);
 }
