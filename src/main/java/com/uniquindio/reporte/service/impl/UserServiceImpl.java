@@ -245,8 +245,9 @@ public class UserServiceImpl implements UserService {
         if (isExisting.isPresent()) {
             if (!isExisting.get().getPassword().equals(changeUserPassword.password())) {
                 User user = isExisting.get();
-                user.setPassword(changeUserPassword.password());
+                user.setPassword(passwordEncoder.encode(changeUserPassword.password()));
                 ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(user);
+                userRepository.save(user);
                 return ResponseEntity.ok(new ResponseDto(200, "La contraseña se ha cambiado exitosamente", responseUserDto));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
