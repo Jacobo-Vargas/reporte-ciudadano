@@ -2,6 +2,10 @@ package com.uniquindio.reporte.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.uniquindio.reporte.model.enums.users.EnumUserStatus;
+import com.uniquindio.reporte.model.enums.users.EnumUserType;
+import com.uniquindio.reporte.utils.OperationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseEntity<?> createCategory(CreateCategoryDTO createCategoryDTO) {
         Category category = categoryMapper.toEntity(createCategoryDTO);
+
+        boolean flag = OperationUtils.validateUserByRol(EnumUserType.ADMINISTRADOR.name());
+        if (!flag) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(200, "No tiene permisos suficientes.", null));
+
+        }
         
         try {
                 categoryRepository.save(category);
@@ -43,6 +54,13 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<?> updateCategory(String name, UpdateCategoryDTO updateCategoryDTO) {
         Optional<Category> optionalCategory = categoryRepository.findByName(name);
 
+        boolean flag = OperationUtils.validateUserByRol(EnumUserType.ADMINISTRADOR.name());
+
+        if (!flag) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(200, "No tiene permisos suficientes.", null));
+
+        }
         if (optionalCategory.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
@@ -59,6 +77,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> deleteCategory(String name) {
+        boolean flag = OperationUtils.validateUserByRol(EnumUserType.ADMINISTRADOR.name());
+        if (!flag) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(200, "No tiene permisos suficientes.", null));
+
+        }
+
         if (!categoryRepository.existsByName(name)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Categoría no encontrada", null));
