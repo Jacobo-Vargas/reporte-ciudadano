@@ -11,6 +11,6 @@ public interface CommentMapper {
 
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDate.now())")
     @Mapping(target = "id", expression = "java(new org.bson.types.ObjectId())")
+    @Mapping(target = "status", constant = "ACTIVO")
     Comment toDocumentCreate(CreateCommentDTO commentDTO);
-
 }

@@ -14,6 +14,7 @@ import java.util.List;
 public interface CategoryMapper {
 
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDate.now())")
+    @Mapping(target = "status", constant = "ACTIVO")
     Category toEntity(CreateCategoryDTO categoryDTO);
     GeneralCategoryDTO toDTO(Category category);
     List<GeneralCategoryDTO> toListDTO (List<Category> listReport);

@@ -1,18 +1,15 @@
 package com.uniquindio.reporte.model.entities;
 
 
+import com.uniquindio.reporte.model.enums.EnumStatusComment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldNameConstants;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
@@ -34,4 +31,5 @@ public class Comment {
     @Field(name = "report_id")
     private String reportId;
 
+    private EnumStatusComment status;
 }

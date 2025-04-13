@@ -1,5 +1,7 @@
 package com.uniquindio.reporte.model.entities;
 
+import com.uniquindio.reporte.model.enums.EnumStatusCategory;
+import com.uniquindio.reporte.model.enums.EnumStatusComment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -26,5 +28,7 @@ public class Category {
     private LocalDate createdAt;
 
     private String icon;
+
+    private EnumStatusCategory status;
 
 }

@@ -6,17 +6,17 @@ import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
 import com.uniquindio.reporte.model.entities.Comment;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
+import com.uniquindio.reporte.model.enums.EnumStatusComment;
+import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.repository.CommentRepository;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.CommentService;
 import com.uniquindio.reporte.service.EmailService;
-import com.uniquindio.reporte.service.ReportService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -79,52 +79,88 @@ public class CommentServiceImpl implements CommentService {
         }
 
         Comment comment = optionalComment.get();
+
+        if (comment.getStatus() == EnumStatusComment.ELIMINADO) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Este comentario fue eliminado", null));
+        }
+
+        Report report = reportRepository.findById(ObjectIdMapperUtil.map(comment.getReportId())).orElse(null);
+        if (report == null || report.getStatus() == EnumStatusReport.ELIMINADO) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "El reporte asociado fue eliminado", null));
+        }
+
         if (updateCommentDTO.message() != null) comment.setMessage(updateCommentDTO.message());
 
-        try{
+        try {
             commentRepository.save(comment);
-
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(),"error interno",null));
-
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno", null));
         }
 
         return ResponseEntity.ok(new ResponseDto(200, "Comentario actualizado correctamente", comment));
-
     }
 
     @Override
     public ResponseEntity<?> deleteComment(ObjectId Id) {
-        if (!commentRepository.existsById(Id)) {
+        Optional<Comment> optionalComment = commentRepository.findById(Id);
+        if (optionalComment.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), "Comentario no encontrado", null));
         }
 
         try {
-            commentRepository.deleteById(Id);
-        }catch (Exception e){
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno",null));
+            Comment comment = optionalComment.get();
+            comment.setStatus(EnumStatusComment.ELIMINADO);
+            commentRepository.save(comment);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno", null));
         }
 
-        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Comentario eliminado correctamente", null));
+        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Comentario eliminado lógicamente", null));
     }
 
     @Override
-    public ResponseEntity<?> getComment(ObjectId Id) {
-        Optional<Comment> comment = commentRepository.findById(Id);
-        return comment.map(value -> ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Comentario encontrado", value)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseDto(404, "Comentario no encontrado", null)));
+    public ResponseEntity<?> getComment(ObjectId id) {
+        Optional<Comment> optionalComment = commentRepository.findById(id);
+
+        if (optionalComment.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(404, "Comentario no encontrado", null));
+        }
+
+        Comment comment = optionalComment.get();
+
+        if (comment.getStatus() == EnumStatusComment.ELIMINADO) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "Este comentario fue eliminado", null));
+        }
+
+        Report report = reportRepository.findById(ObjectIdMapperUtil.map(comment.getReportId())).orElse(null);
+        if (report == null || report.getStatus() == EnumStatusReport.ELIMINADO) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(400, "El reporte asociado fue eliminado", null));
+        }
+
+        return ResponseEntity.ok(new ResponseDto(200, "Comentario obtenido correctamente", comment));
     }
 
     @Override
     public ResponseEntity<?> getComments() {
-        List<Comment> comments = commentRepository.findAll();
+        List<Comment> comments = commentRepository.findAll()
+                .stream()
+                .filter(c -> c.getStatus() == EnumStatusComment.ACTIVO)
+                .filter(c -> {
+                    Report report = reportRepository.findById(ObjectIdMapperUtil.map(c.getReportId())).orElse(null);
+                    return report != null && report.getStatus() != EnumStatusReport.ELIMINADO;
+                })
+                .toList();
+
         if (comments.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(200, "No hay comentarios activos", List.of()));
         }
 
-        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de comentarios obtenida", comments));
-
+        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de comentarios activos obtenida", comments));
     }
 }
