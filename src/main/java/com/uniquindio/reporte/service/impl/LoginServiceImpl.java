@@ -44,6 +44,11 @@ public class LoginServiceImpl implements LoginService {
             throw new Exception("La cuenta no esta activa, estado: ".concat(user.getEnumUserStatus().name()));
         }
 
+        //verifica si la cuenta esta verificada
+        if(!user.isVerification()){
+            throw new Exception("La cuenta no ha sido verificada ");
+        }
+
         String token = jwtUtils.generateToken(user.getId().toString(), crearClaims(user));
 
         return new TokenDTO(token);

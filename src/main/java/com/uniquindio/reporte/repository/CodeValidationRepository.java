@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface CodeValidationRepository extends MongoRepository<CodeValidation, ObjectId> {
     // Método para buscar un usuario por el código de confirmación
     Optional<CodeValidation> findByCode(String confirmationCode);
+
+    void deleteByCode(String code);
 }

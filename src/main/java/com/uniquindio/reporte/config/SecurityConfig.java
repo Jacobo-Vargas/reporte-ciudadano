@@ -46,7 +46,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/users/register").permitAll()
+                        .requestMatchers("/users/sendCodeConfirmation/**").permitAll()
+                        .requestMatchers("/users/verifyAccountEmailCode").permitAll()
                         .requestMatchers("/users/createUser/**").permitAll()  // <-- esta línea nueva
                         .requestMatchers("/users/verifyEmailAndDocumentNumber").permitAll()
                         .requestMatchers("/users/changeUserPassword").permitAll()

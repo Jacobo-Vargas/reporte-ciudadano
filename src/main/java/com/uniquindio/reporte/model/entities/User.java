@@ -61,4 +61,8 @@ public class User {
     @Field(name="email_request")
     private EmailRequest emailRequest;
 
+    private boolean verification;
+
+
+
 }

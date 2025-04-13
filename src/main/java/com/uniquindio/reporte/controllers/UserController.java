@@ -1,9 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
-import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
-import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.register.*;
 import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
@@ -20,15 +17,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    //crear usuario
-    @PostMapping("/register")
-    public ResponseEntity<?> sendCodeConfirmation(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
-        return userService.sendCodeConfirmation(createUserDTO);
+    //enviar codigo verificaion
+    @PostMapping("/sendCodeConfirmation/{email}")
+    public ResponseEntity<?> sendCodeConfirmation(@PathVariable String email) throws Exception {
+        return userService.sendCodeConfirmation(email);
     }
     //crear usuario
-    @PostMapping("/createUser/{code}")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO, @PathVariable  String code) throws Exception {
-        return userService.createUser(createUserDTO,code);
+    @PostMapping("/createUser/")
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
+        return userService.createUser(createUserDTO);
+    }
+    //verificar cuenta
+    @PutMapping("/verifyAccountEmailCode")
+    ResponseEntity<?> verifyAccountEmailCode(@RequestBody @Valid VerifyAccountEmailCodeDto verifyAccountEmailCodeDto) throws  Exception {
+        return userService.verifyAccountEmailCode(verifyAccountEmailCodeDto);
     }
 
 
@@ -70,6 +72,7 @@ public class UserController {
         return  userService.changeUserPassword(changeUserPassword);
 
     }
+
 
 
 

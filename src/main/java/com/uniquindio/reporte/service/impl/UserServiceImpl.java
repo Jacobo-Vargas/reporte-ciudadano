@@ -1,10 +1,7 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.UserMapper;
-import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
-import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
-import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
-import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.register.*;
 import com.uniquindio.reporte.model.DTO.user.response.ResponseUserDto;
 import com.uniquindio.reporte.model.DTO.user.response.ResponseUserStatusDto;
 import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
@@ -50,80 +47,93 @@ public class UserServiceImpl implements UserService {
     private CodeValidationServiceIpml codeValidationServiceIpml;
 
     @Override
-    public ResponseEntity<?> sendCodeConfirmation(CreateUserDTO createUserDTO) throws Exception {
-        try {
-            //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
-            Optional<User> existingUser = userRepository.findByEmailOrDocumentNumber(createUserDTO.email(), createUserDTO.documentNumber());
-            if (existingUser.isPresent()) {
-                String message = existingUser.get().getEmail().equals(createUserDTO.email()) ?
-                        String.format("El email %s ya está registrado", createUserDTO.email()) : String.format("La cedula %s ya está registrada", createUserDTO.documentNumber());
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseDto(409, message, null));
-            }
+    public ResponseEntity<?> sendCodeConfirmation(String email) throws Exception {
+        Optional<User> isExistingUser = userRepository.findByEmail(email);
+        if(isExistingUser.isPresent()) {
             // Generar código y enviarlo
-            String code = verificationCodeService.generateAndStoreCode(createUserDTO.email());
-
-            emailService.sendCodeVerifaction(createUserDTO.email(), code);
+            String code = verificationCodeService.generateAndStoreCode(email);
+            emailService.sendCodeVerifaction(email, code);
             //guardar en la base de datos el cod
-            codeValidationServiceIpml.saveCode(code, createUserDTO.email());
-
+            codeValidationServiceIpml.saveCode(code, email);
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(new ResponseDto(200, "Código de verificación enviado al correo electrónico: ", createUserDTO.email()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    @Override
-    public ResponseEntity<?> createUser(CreateUserDTO createUserDTO, String code) throws Exception {
-        Optional<CodeValidation> codeValidation = codeValidationServiceIpml.getCodeValidation(code);
-        if (codeValidation.isPresent()) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime expiresAt = codeValidation.get().getExpiresAt();
-            if (now.isBefore(expiresAt)) {
-                if (codeValidation.get().getCode().equals(code)) {
-                    //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
-                    Optional<User> existingUser = userRepository.findByEmailOrDocumentNumber(createUserDTO.email(), createUserDTO.documentNumber());
-                    if (existingUser.isPresent()) {
-                        String message = existingUser.get().getEmail().equals(createUserDTO.email()) ?
-                                String.format("El email %s ya está registrado", createUserDTO.email()) : String.format("La cedula %s ya está registrada", createUserDTO.documentNumber());
-                        return ResponseEntity.status(HttpStatus.CONFLICT)
-                                .body(new ResponseDto(409, message, null));
-                    }
-                    //Mapeo del dto createUserDto al  documento user
-                    User user = userMapper.toDocumentCreate(createUserDTO);
-                    //Asignación de datos predeterminados
-                    user.setScore(0);
-                    user.setCreatedAt(LocalDate.now());
-                    user.setEnumUserStatus(EnumUserStatus.ACTIVO);
-                    user.setUserType(EnumUserType.CLIENTE);
-                    user.setDocumentNumber(createUserDTO.documentNumber());
-                    user.setPassword(passwordEncoder.encode(createUserDTO.password()));
-                    ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(userRepository.save(user));
-                    return ResponseEntity.status(HttpStatus.CREATED)
-                            .body(new ResponseDto(200, "Usuario creado exitosamente", responseUserDto));
-                }
-            }
-            else {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ResponseDto(410, "El código ha expirado", code));
-
-            }
-        }
-        else {
+                    .body(new ResponseDto(200, "Código de verificación enviado al correo electrónico: ", email));
+        }else {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseDto(409, String.format("El codigo  %s  no es correcto ", code), null));
+                    .body(new ResponseDto(400, "No hay un usario registrado con el email:  ", email));
         }
-        return null;
     }
 
 
+    @Override
+    public ResponseEntity<?> createUser(CreateUserDTO createUserDTO) throws Exception {
+        //Verificación sobre los datos email y phone, para asegurarnos que no se repitan
+        Optional<User> existingUser = userRepository.findByEmailOrDocumentNumber(createUserDTO.email(), createUserDTO.documentNumber());
+        if (existingUser.isPresent()) {
+            String message = existingUser.get().getEmail().equals(createUserDTO.email()) ?
+                    String.format("El email %s ya está registrado", createUserDTO.email()) : String.format("La cedula %s ya está registrada", createUserDTO.documentNumber());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ResponseDto(409, message, null));
+        }
+        //Mapeo del dto createUserDto al  documento user
+        User user = userMapper.toDocumentCreate(createUserDTO);
+        //Asignación de datos predeterminados
+        user.setScore(0);
+        user.setCreatedAt(LocalDate.now());
+        user.setEnumUserStatus(EnumUserStatus.ACTIVO);
+        user.setUserType(EnumUserType.CLIENTE);
+        user.setDocumentNumber(createUserDTO.documentNumber());
+        user.setPassword(passwordEncoder.encode(createUserDTO.password()));
+        user.setVerification(false);
+        ResponseUserDto responseUserDto = userMapper.toDtoResponseUser(userRepository.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ResponseDto(200, "Usuario creado exitosamente", responseUserDto));
+
+    }
+
+    @Override
+    public ResponseEntity<?> verifyAccountEmailCode(VerifyAccountEmailCodeDto verifyAccountEmailCodeDto) throws Exception {
+        Optional<CodeValidation> codeValidation = codeValidationServiceIpml.getCodeValidation(verifyAccountEmailCodeDto.code());
+        Optional<User> isExistigUser = userRepository.findByEmail(verifyAccountEmailCodeDto.email());
+        if (isExistigUser.isPresent()) {
+            User user = isExistigUser.get();
+            if (!user.isVerification()) {
+                if (codeValidation.isPresent()) {
+                    if (codeValidation.get().getCode().equals(verifyAccountEmailCodeDto.code())) {
+                        LocalDateTime now = LocalDateTime.now();
+                        LocalDateTime expiresAt = codeValidation.get().getExpiresAt();
+                        if (now.isBefore(expiresAt)) {
+                            user.setVerification(true);
+                            userRepository.save(user);
+                            codeValidationServiceIpml.deleteByCode(codeValidation.get().getCode());
+                            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                                    .body(new ResponseDto(200, "La cuenta ha sido verificada", null));
+                        } else {
+                            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                    .body(new ResponseDto(410, "El código ha expirado", verifyAccountEmailCodeDto.code()));
+                        }
+                    } else {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(new ResponseDto(409, String.format("El codigo  %s  no es correcto ", verifyAccountEmailCodeDto.code()), null));
+                    }
+                } else {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(new ResponseDto(410, "No hay un codigo registrado con ese valor", verifyAccountEmailCodeDto.code()));
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ResponseDto(410, "La cuenta ya se encunetra verificada", null));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ResponseDto(410, "No hay un usuario registrado con el email :", verifyAccountEmailCodeDto.email()));
+        }
+    }
 
 
     @Override
     public ResponseEntity<?> updateUser(String id, UpdateUserDto updateUserDto) throws Exception {
         ObjectId objectId = new ObjectId(id);
         Optional<User> optionalUser = userRepository.findById(objectId);
-
         if (optionalUser.isEmpty()) {
             if (optionalUser.get().getEmail().equals(updateUserDto.email())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
