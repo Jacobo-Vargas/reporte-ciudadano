@@ -63,6 +63,4 @@ public class User {
 
     private boolean verification;
 
-
-
 }

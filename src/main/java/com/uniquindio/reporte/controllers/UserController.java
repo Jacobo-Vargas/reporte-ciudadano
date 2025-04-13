@@ -33,9 +33,6 @@ public class UserController {
         return userService.verifyAccountEmailCode(verifyAccountEmailCodeDto);
     }
 
-
-
-
     //actualizar usuario
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDto updateUserDto) throws Exception {
@@ -72,11 +69,4 @@ public class UserController {
         return  userService.changeUserPassword(changeUserPassword);
 
     }
-
-
-
-
-
-
-
 }

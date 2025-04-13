@@ -16,10 +16,5 @@ public record CreateCommentDTO(
         @NotBlank(message = "Debe ingresar el id del reporte")
         @Length(max = 400)
         String reportId
-
-
-
-
 ) {
-
 }

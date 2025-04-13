@@ -8,5 +8,4 @@ public record UpdateCommentDTO(
         String message
 
 ) {
-
 }

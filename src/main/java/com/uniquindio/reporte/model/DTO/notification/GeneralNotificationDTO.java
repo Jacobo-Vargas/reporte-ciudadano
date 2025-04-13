@@ -7,4 +7,5 @@ public record GeneralNotificationDTO(String id,
                                      Boolean read,
                                      String reportId,
                                      String userId
-) {}
+) {
+}

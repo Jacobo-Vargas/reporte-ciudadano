@@ -14,6 +14,7 @@ public interface HistoryReportMapper {
 
     @Mapping(target = "date", expression = "java(java.time.LocalDate.now())")
     @Mapping(target = "clienteId", expression = "java(ObjectIdMapperUtil.map(dto.clienteId()))")
+    @Mapping(target = "reportId", expression = "java(ObjectIdMapperUtil.map(dto.reportId()))")
     HistoryReport toEntity(CreateHistoryReportDTO dto);
 
     GeneralHistoryReportDTO toDTO(HistoryReport entity);
