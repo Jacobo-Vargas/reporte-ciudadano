@@ -12,5 +12,6 @@ public interface CommentService {
     ResponseEntity<?> deleteComment(ObjectId Id);
     ResponseEntity<?> getComment(ObjectId Id);
     ResponseEntity<?> getComments();
+    ResponseEntity<?> getCommentsByStatus(String status);
 
 }

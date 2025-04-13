@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.entities;
 
-
+import com.uniquindio.reporte.model.enums.EnumStatusHistoryReport;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
 import java.time.LocalDate;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -33,5 +32,7 @@ public class HistoryReport {
 
     @Field(name = "enumStateReport")
     private EnumStatusReport enumStatusReport;
+
+    private EnumStatusHistoryReport status;
 
 }

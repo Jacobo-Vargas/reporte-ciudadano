@@ -13,6 +13,7 @@ import java.util.List;
 public interface NotificationMapper {
 
     @Mapping(target = "date", expression = "java(java.time.LocalDate.now())")
+    @Mapping(target = "status", constant = "ACTIVO")
     Notification toEntity(CreateNotificationDTO dto);
 
     GeneralNotificationDTO toDTO(Notification notification);

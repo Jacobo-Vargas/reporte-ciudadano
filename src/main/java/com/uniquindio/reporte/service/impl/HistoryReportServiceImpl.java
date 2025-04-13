@@ -6,6 +6,7 @@ import com.uniquindio.reporte.mapper.ReportMapper;
 import com.uniquindio.reporte.model.DTO.historyReport.CreateHistoryReportDTO;
 import com.uniquindio.reporte.model.DTO.historyReport.UpdateHistoryReportDTO;
 import com.uniquindio.reporte.model.entities.HistoryReport;
+import com.uniquindio.reporte.model.enums.EnumStatusHistoryReport;
 import com.uniquindio.reporte.repository.HistoryReportRepository;
 import com.uniquindio.reporte.service.HistoryReportService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
@@ -42,11 +43,15 @@ public class HistoryReportServiceImpl implements HistoryReportService {
             HistoryReport report = historyReportRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("No se encontró el historial con ese id"));
 
+            if (report.getStatus() == EnumStatusHistoryReport.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(400, "Este historial ya fue eliminado", null));
+            }
+
             report.setObservations(dto.observations());
             report.setClienteId(ObjectIdMapperUtil.map(dto.clienteId()));
             report.setEnumStatusReport(dto.enumStatusReport());
             report.setReportId(ObjectIdMapperUtil.map(dto.reportId()));
-
 
             historyReportRepository.save(report);
 
@@ -59,15 +64,26 @@ public class HistoryReportServiceImpl implements HistoryReportService {
 
     @Override
     public ResponseEntity<?> getAllHistoryReports() {
-        List<HistoryReport> list = historyReportRepository.findAll();
+        List<HistoryReport> list = historyReportRepository.findAll()
+                .stream()
+                .filter(r -> r.getStatus() == EnumStatusHistoryReport.ACTIVO)
+                .toList();
+
         return ResponseEntity.ok(new ResponseDto(200, "Historiales obtenidos", historyReportMapper.toListDTO(list)));
     }
+
 
     @Override
     public ResponseEntity<?> getHistoryReportById(String id) {
         try {
             HistoryReport report = historyReportRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró el historial con id: " + id));
+
+            if (report.getStatus() == EnumStatusHistoryReport.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDto(404, "Este historial está eliminado", null));
+            }
+
             return ResponseEntity.ok(new ResponseDto(200, "Historial obtenido", historyReportMapper.toDTO(report)));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -75,18 +91,28 @@ public class HistoryReportServiceImpl implements HistoryReportService {
         }
     }
 
+
     @Override
     public ResponseEntity<?> deleteHistoryReport(String id) {
         try {
             HistoryReport report = historyReportRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró el historial con id: " + id));
-            historyReportRepository.delete(report);
-            return ResponseEntity.ok(new ResponseDto(200, "Historial eliminado", null));
+
+            if (report.getStatus() == EnumStatusHistoryReport.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(400, "Este historial ya está eliminado", null));
+            }
+
+            report.setStatus(EnumStatusHistoryReport.ELIMINADO);
+            historyReportRepository.save(report);
+
+            return ResponseEntity.ok(new ResponseDto(200, "Historial eliminado correctamente", null));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, e.getMessage(), null));
         }
     }
+
 
     public HistoryReport save(CreateHistoryReportDTO dto) {
         HistoryReport entity = historyReportMapper.toEntity(dto);
