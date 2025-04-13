@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.service.ImageService;
+import com.uniquindio.reporte.service.impl.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +17,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ImageController {
 
-    private final ImageService imageService;
+    private final UploadImageService uploadImageService;
 
     @PostMapping("/subir")
     public ResponseEntity<?> subirImagen(@RequestParam("archivo") MultipartFile archivo) {
         try {
-            String url = imageService.uploadFile(archivo);
+            String url = uploadImageService.uploadFile(archivo);
             return ResponseEntity.ok(Map.of("url", url));
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Error subiendo imagen: " + e.getMessage());

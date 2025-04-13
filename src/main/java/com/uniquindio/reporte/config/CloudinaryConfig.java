@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.utils;
+package com.uniquindio.reporte.config;
 
 import com.cloudinary.Cloudinary;
 import org.springframework.context.annotation.Bean;
