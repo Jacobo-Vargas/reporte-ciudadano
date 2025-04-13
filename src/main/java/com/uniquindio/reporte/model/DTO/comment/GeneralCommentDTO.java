@@ -5,8 +5,6 @@ public record GeneralCommentDTO(String id,
                                 String message,
                                 String userId,
                                 String reportId
-
-
 ){
 }
 

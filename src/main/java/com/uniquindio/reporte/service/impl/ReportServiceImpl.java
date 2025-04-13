@@ -55,12 +55,23 @@ public class ReportServiceImpl implements ReportService {
         report.setDateCreation(LocalDate.now());
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
 
-        HistoryReport historyReport = historyReportService.save(new CreateHistoryReportDTO("Estado inicial, creado y pendiente de validación", createReportDTO.userId(), EnumStatusReport.PENDIENTE));
+        saveReport(report);
+
+        HistoryReport historyReport = historyReportService.save(
+                new CreateHistoryReportDTO(
+                        "Estado inicial, creado y pendiente de validación",
+                        createReportDTO.userId(),
+                        EnumStatusReport.PENDIENTE,
+                        report.getId().toString()
+                )
+        );
+
         List<HistoryReport> list = new ArrayList<>(1);
         list.add(historyReport);
-
         report.setHistory(list);
+
         saveReport(report);
+
         User creador = userRepository.findById(report.getUserId()).orElse(null);
         if (creador != null) {
             emailService.enviarConfirmacionCreacionReporte(
@@ -68,7 +79,6 @@ public class ReportServiceImpl implements ReportService {
                     report.getTitle()
             );
         }
-
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Reporte guardado con éxito", reportMapper.toDTO(report)));
@@ -137,7 +147,7 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
             List<HistoryReport> list = report.getHistory();
-            list.add(historyReportService.save(new CreateHistoryReportDTO(changeStatusReportDTO.observation(), ObjectIdMapperUtil.map(report.getUserId()), EnumStatusReport.valueOf(changeStatusReportDTO.status()))));
+            list.add(historyReportService.save(new CreateHistoryReportDTO(changeStatusReportDTO.observation(), ObjectIdMapperUtil.map(report.getUserId()), EnumStatusReport.valueOf(changeStatusReportDTO.status()), report.getId().toString())));
             report.setHistory(list);
             report.setStatus(EnumStatusReport.valueOf(changeStatusReportDTO.status()));
             log.info("Actualizando reporte a nuevo estado {}", report.getStatus().name());

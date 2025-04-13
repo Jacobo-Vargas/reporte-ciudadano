@@ -6,4 +6,5 @@ public record GeneralQualificationDTO(
         String reportId,
         String userId,
         String dateCreation
-) {}
+) {
+}

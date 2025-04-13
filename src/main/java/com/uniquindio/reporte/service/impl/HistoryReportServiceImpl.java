@@ -45,6 +45,8 @@ public class HistoryReportServiceImpl implements HistoryReportService {
             report.setObservations(dto.observations());
             report.setClienteId(ObjectIdMapperUtil.map(dto.clienteId()));
             report.setEnumStatusReport(dto.enumStatusReport());
+            report.setReportId(ObjectIdMapperUtil.map(dto.reportId()));
+
 
             historyReportRepository.save(report);
 

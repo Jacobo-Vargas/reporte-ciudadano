@@ -26,6 +26,9 @@ public class HistoryReport {
     @Field(name = "client_Id")
     private ObjectId clienteId;
 
+    @Field(name = "report_Id")
+    private ObjectId reportId;
+
     private LocalDate date;
 
     @Field(name = "enumStateReport")
