@@ -27,6 +27,14 @@ public class CodeValidationServiceIpml {
         return null;
     }
 
+    public void saveDateExpiresAt(CodeValidation codeValidation){
+        codeValidationRepository.save(codeValidation);
+    }
+
+    public  void deleteByCode(String code){
+        codeValidationRepository.deleteByCode(code);
+    }
+
     public Optional<CodeValidation> getCodeValidation(String code) {
         return codeValidationRepository.findByCode(code);
     }
