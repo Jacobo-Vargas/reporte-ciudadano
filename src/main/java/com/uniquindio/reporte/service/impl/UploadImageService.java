@@ -1,4 +1,4 @@
-package com.uniquindio.reporte.service;
+package com.uniquindio.reporte.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ImageService {
+public class UploadImageService {
 
     private final Cloudinary cloudinary;
 
