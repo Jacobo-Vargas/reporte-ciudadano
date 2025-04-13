@@ -13,6 +13,8 @@ import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.UserRepository;
 import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.UserService;
+import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
+import com.uniquindio.reporte.utils.OperationUtils;
 import com.uniquindio.reporte.utils.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -25,9 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService {
                     .body(new ResponseDto(410, "No hay un usuario registrado con el email :", verifyAccountEmailCodeDto.email()));
         }
     }
+
 
 
     @Override
@@ -258,7 +259,67 @@ public class UserServiceImpl implements UserService {
                     .body(new ResponseDto(400, "La cédula no coincide con la verificación", false));
         }
     }
+    @Override
+    public ResponseEntity<?> addFollowerToUser(FollowerRequestDto dto) throws Exception {
+        ObjectId followerdId = new ObjectId(dto.followerId());
+        ObjectId userId = new ObjectId(dto.idUserLoggin());
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalFollower = userRepository.findById(followerdId);
+        // Verificar si el usuario o el seguidor no existen
+        if (optionalUser.isEmpty() || optionalFollower.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuario o seguidor no encontrado");
+        }
+        User user = optionalUser.get();
+        // Verificar si el seguidor ya está en la lista de seguidores del usuario
+        boolean isAlreadyFollowing = user.getFollowers().stream()
+                .anyMatch(followerEntry -> followerEntry.containsKey(followerdId.toString()));
+        if (isAlreadyFollowing) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El seguidor ya está en la lista de seguidores");
+        }
+        // Agregar nuevo seguidor con su rating
+        Map<String, Integer> newFollower = new HashMap<>();
+        newFollower.put(dto.followerId(), dto.rating());
+        // Agregar el seguidor a la lista de seguidores
+        user.getFollowers().add(newFollower);
+        // Actualizar el score sumando el rating
+        user.setScore(user.getScore() + dto.rating());
+        // Guardar los cambios
+        userRepository.save(user);
+        return ResponseEntity.ok("Seguidor agregado y puntuación actualizada");
+    }
 
+
+    public ResponseEntity<?> removeFollowerFromUser(FollowerRequestDto dto) throws Exception {
+        ObjectId followerId = new ObjectId(dto.followerId());
+        ObjectId userId = new ObjectId(dto.idUserLoggin());
+        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalFollower = userRepository.findById(followerId);
+        if (optionalUser.isEmpty() || optionalFollower.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario o seguidor no encontrado");
+        }
+        User user = optionalUser.get();
+        List<Map<String, Integer>> followers = user.getFollowers();
+        if (followers == null || followers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario no tiene seguidores");
+        }
+        // Buscar el seguidor en la lista
+        Map<String, Integer> followerToRemove = followers.stream()
+                .filter(f -> f.containsKey(dto.followerId()))
+                .findFirst()
+                .orElse(null);
+        if (followerToRemove == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este usuario no es un seguidor");
+        }
+        // Restar la calificación del score y eliminar el seguidor
+        int rating = followerToRemove.get(dto.followerId());
+        user.setScore(user.getScore() - rating);
+        followers.remove(followerToRemove);
+        userRepository.save(user);
+        return ResponseEntity.ok("Seguidor eliminado y puntaje actualizado");
+    }
 
 }
+
 

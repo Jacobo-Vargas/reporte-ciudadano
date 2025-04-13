@@ -13,7 +13,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
@@ -50,8 +52,7 @@ public class User {
     @Field(name = "user_status")
     private EnumUserStatus enumUserStatus;
 
-    @DBRef // Para referenciar usuarios seguidores en otra colección
-    private List<User> followers;
+    private List<Map<String,Integer>> followers =new ArrayList<>();;
 
     private int score;
 

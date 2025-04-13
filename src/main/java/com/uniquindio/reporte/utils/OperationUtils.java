@@ -45,4 +45,6 @@ public class OperationUtils {
 
         return roles.stream().anyMatch(item -> item.equals("ROLE_".concat(rol)));
     }
+
+
 }

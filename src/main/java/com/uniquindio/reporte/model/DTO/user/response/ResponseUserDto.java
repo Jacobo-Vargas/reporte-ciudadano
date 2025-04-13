@@ -8,6 +8,7 @@ import com.uniquindio.reporte.model.enums.users.EnumUserType;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public record ResponseUserDto(
 
@@ -21,7 +22,7 @@ public record ResponseUserDto(
         String password,
         EnumUserType userType,
         EnumUserStatus enumUserStatus,
-        List<User> followers,
+        List<Map<String, Integer>> followers,
         int score,
         LocalDate createdAt,
         CodeValidation codeValidation

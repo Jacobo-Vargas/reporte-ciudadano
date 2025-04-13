@@ -5,7 +5,9 @@ import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumb
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.angus.mail.handlers.text_html;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,6 +73,21 @@ public class UserController {
     public  ResponseEntity<?>changeUserPassword(@RequestBody @Valid ChangeUserPassword changeUserPassword)throws  Exception{
         return  userService.changeUserPassword(changeUserPassword);
 
+    }
+
+    @PutMapping("/addFollower")
+    public ResponseEntity<?> addFollowerToUser(@RequestBody FollowerRequestDto dto)throws Exception {
+        return userService.addFollowerToUser(dto);
+    }
+
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<?> removeFollower(@RequestBody FollowerRequestDto dto) {
+        try {
+            return userService.removeFollowerFromUser(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al intentar dejar de seguir: " + e.getMessage());
+        }
     }
 
 

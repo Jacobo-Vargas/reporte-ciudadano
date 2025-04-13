@@ -4,6 +4,7 @@ import com.uniquindio.reporte.model.DTO.user.register.*;
 import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface UserService {
 
@@ -24,4 +25,8 @@ public interface UserService {
     ResponseEntity<?> createUser(CreateUserDTO createUserDTO)throws Exception;
 
     ResponseEntity<?> verifyAccountEmailCode(VerifyAccountEmailCodeDto verifyAccountEmailCodeDto) throws  Exception;
+
+    ResponseEntity<?> addFollowerToUser(FollowerRequestDto dto)throws Exception;
+
+    ResponseEntity<?> removeFollowerFromUser(FollowerRequestDto dto) throws Exception;
 }
