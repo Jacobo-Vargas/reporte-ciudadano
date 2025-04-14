@@ -1,0 +1,54 @@
+name: CI - Auto PR and Merge:dev to prod
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Run tests
+        run: ./gradlew test -Dspring.profiles.active=dev
+
+      - name: Create Pull Request from dev to prod
+        if: success()
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: auto PR dev → prod'
+          title: 'Auto PR: Merge dev into prod'
+          body: '✅ Tests passed en dev. Este PR sincroniza los cambios con prod.'
+          base: prod
+          branch: dev
+          delete-branch: false
+
+  auto-merge:
+    needs: build-and-pr
+    runs-on: ubuntu-latest
+    if: ${{ needs.build-and-pr.outputs.pull-request-number }}
+    steps:
+      - name: Auto-merge PR if checks pass
+        uses: ahmadnassri/action-auto-merge@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ needs.build-and-pr.outputs.pull-request-number }}
+          merge-method: squash
