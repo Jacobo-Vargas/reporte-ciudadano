@@ -7,6 +7,7 @@ import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
+import com.uniquindio.reporte.model.entities.Category;
 import com.uniquindio.reporte.model.entities.HistoryReport;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
@@ -14,6 +15,7 @@ import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
+import com.uniquindio.reporte.service.CategoryService;
 import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.HistoryReportService;
 import com.uniquindio.reporte.service.ReportService;
@@ -35,6 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -48,6 +51,7 @@ public class ReportServiceImpl implements ReportService {
     private final EmailService emailService;
     private final HistoryReportService historyReportService;
     private final UploadImageService uploadImageService;
+    private final CategoryService categoryService;
 
     @Override
     @Transactional
@@ -58,6 +62,14 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(EnumStatusReport.PENDIENTE);
         report.setDateCreation(LocalDate.now());
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
+        try {
+            validateCategory(ObjectIdMapperUtil.map(report.getCategoryId()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage(), ObjectIdMapperUtil.map(report.getCategoryId())));
+
+        }
+
 
         saveReport(report);
 
@@ -254,5 +266,9 @@ public class ReportServiceImpl implements ReportService {
         } else {
             return true;
         }
+    }
+
+    private void validateCategory(String categoryId) throws NotFoundException {
+        categoryService.getCategoryById(categoryId);
     }
 }

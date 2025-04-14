@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.service.impl;
 
+import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.CategoryMapper;
 import com.uniquindio.reporte.model.DTO.category.CreateCategoryDTO;
 import com.uniquindio.reporte.model.DTO.category.GeneralCategoryDTO;
@@ -143,5 +144,10 @@ public class CategoryServiceImpl implements CategoryService {
         List<GeneralCategoryDTO> categoriesR = categoryMapper.toListDTO(categories);
         return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de categorías obtenida", categoriesR));
 
+    }
+
+    @Override
+    public Category getCategoryById(String categoryId) throws NotFoundException {
+        return categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("No existe la categoria con id ".concat(categoryId)));
     }
 }
