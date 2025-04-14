@@ -7,10 +7,14 @@ import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface ReportService {
 
-    ResponseEntity<?> createReport(CreateReportDTO createReportDTO);
+    ResponseEntity<?> createReport(CreateReportDTO createReportDTO, List<MultipartFile> photos) throws IOException;
 
     ResponseEntity<?> updateReport(UpdateReportDTO updateReportDTO);
 

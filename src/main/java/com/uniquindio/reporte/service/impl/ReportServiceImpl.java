@@ -26,13 +26,15 @@ import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -45,9 +47,11 @@ public class ReportServiceImpl implements ReportService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final HistoryReportService historyReportService;
+    private final UploadImageService uploadImageService;
 
     @Override
-    public ResponseEntity<?> createReport(CreateReportDTO createReportDTO) {
+    @Transactional
+    public ResponseEntity<?> createReport(CreateReportDTO createReportDTO, List<MultipartFile> photos) throws IOException {
 
         Report report = reportMapper.toEntity(createReportDTO);
 
@@ -70,6 +74,15 @@ public class ReportServiceImpl implements ReportService {
         list.add(historyReport);
         report.setHistory(list);
 
+        if (photos != null && !photos.isEmpty()) {
+            List<String> imageUrls = new ArrayList<>();
+            for (MultipartFile image : photos) {
+                String imageUrl = uploadImageService.uploadFile(image);
+                imageUrls.add(imageUrl);
+            }
+            report.setPhotos(imageUrls);
+        }
+
         saveReport(report);
 
         User creador = userRepository.findById(report.getUserId()).orElse(null);
@@ -85,6 +98,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> updateReport(UpdateReportDTO updateReportDTO) {
 
         try {
@@ -115,6 +129,7 @@ public class ReportServiceImpl implements ReportService {
      }
 
     @Override
+    @Transactional
     public ResponseEntity<?> changeStatusReport(ChangeStatusReportDTO changeStatusReportDTO) {
         try {
             Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.id()))));
@@ -170,6 +185,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public void saveReport(Report report) {
         reportRepository.save(report);
         log.info("Reporte almacenado con éxito.");
@@ -191,6 +207,7 @@ public class ReportServiceImpl implements ReportService {
  }
 
     @Override
+    @Transactional
     public ResponseEntity<?> deleteReportById(String id) {
 
         try {
@@ -217,6 +234,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException {
 
         Report report = reportRepository.findById(ObjectIdMapperUtil.map(reportId)).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(reportId))));
