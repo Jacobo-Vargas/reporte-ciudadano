@@ -1,8 +1,10 @@
 package com.uniquindio.reporte.service.impl;
 
 import com.uniquindio.reporte.mapper.CommentMapper;
+import com.uniquindio.reporte.model.DTO.category.GeneralCategoryDTO;
 import com.uniquindio.reporte.model.DTO.comment.CreateCommentDTO;
 import com.uniquindio.reporte.model.DTO.comment.UpdateCommentDTO;
+import com.uniquindio.reporte.model.entities.Category;
 import com.uniquindio.reporte.model.entities.Comment;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
@@ -162,5 +164,20 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de comentarios activos obtenida", comments));
+    }
+
+    @Override
+    public ResponseEntity<?> getCommentsByStatus(String status) {
+        List<Comment> comments = commentRepository.findAll()
+                .stream()
+                .filter(c -> c.getStatus().name().equals(status))
+                .toList();
+
+        if (comments.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        List<GeneralCategoryDTO> categoriesR = commentMapper.toListDTO(comments);
+        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de categorías obtenida", categoriesR));
+
     }
 }

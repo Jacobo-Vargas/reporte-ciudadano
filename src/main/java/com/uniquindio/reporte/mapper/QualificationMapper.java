@@ -14,6 +14,7 @@ import java.util.List;
 public interface QualificationMapper {
 
     @Mapping(target = "dateCreation", expression = "java(java.time.LocalDate.now())")
+    @Mapping(target = "status", constant = "ACTIVO")
     Qualification toEntity(CreateQualificationDTO dto);
     GeneralQualificationDTO toDTO(Qualification qualification);
     List<GeneralQualificationDTO> toListDTO(List<Qualification> qualifications);

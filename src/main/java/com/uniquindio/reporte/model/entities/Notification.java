@@ -1,6 +1,6 @@
 package com.uniquindio.reporte.model.entities;
 
-
+import com.uniquindio.reporte.model.enums.EnumStatusNotification;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
-
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
@@ -35,4 +34,5 @@ public class Notification {
     @Field(name = "user_id")
     private ObjectId userId;
 
+    private EnumStatusNotification status;
 }
