@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.service.impl;
 
+import com.itextpdf.text.log.SysoCounter;
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.QualificationMapper;
 import com.uniquindio.reporte.model.DTO.qualification.CreateQualificationDTO;
@@ -110,6 +111,7 @@ public class QualificationServiceImpl implements QualificationService {
 
     @Override
     public ResponseEntity<?> deleteQualification(String id) {
+        System.out.println("Intentando eliminar calificación con id: " + id);
         try {
             Qualification qualification = qualificationRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró la calificación con id: " + id));
