@@ -18,7 +18,7 @@ Es una API RESTful desarrollada con **Spring Boot** y **MongoDB** para el report
 
 ## 🛠️ Estructura general
 
-La API contiene controladores REST para la gestión de reportes, autenticación de usuarios y operaciones relacionadas.  
+La API contiene arquitectura REST para la gestión de reportes, autenticación de usuarios y operaciones relacionadas.  
 El acceso a los endpoints está protegido con autenticación JWT, excepto en los entornos de desarrollo y prueba (modo `dev`).
 
 ---
