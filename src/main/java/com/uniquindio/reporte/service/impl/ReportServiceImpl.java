@@ -147,7 +147,7 @@ public class ReportServiceImpl implements ReportService {
             Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.id()))));
             boolean flag = validateChangeStatus(changeStatusReportDTO.status());
 
-            if (flag) {
+            if (!flag) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseDto(200, "No tiene permisos suficientes para cambiar el estado de el reporte.", null));
 
