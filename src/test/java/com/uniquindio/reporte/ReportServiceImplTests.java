@@ -6,13 +6,16 @@ import com.uniquindio.reporte.model.DTO.location.LocationDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
+import com.uniquindio.reporte.model.entities.Category;
 import com.uniquindio.reporte.model.entities.HistoryReport;
 import com.uniquindio.reporte.model.entities.Location;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
+import com.uniquindio.reporte.repository.CategoryRepository;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
+import com.uniquindio.reporte.service.CategoryService;
 import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.HistoryReportService;
 import com.uniquindio.reporte.service.impl.LocationServiceImpl;
@@ -63,6 +66,10 @@ class ReportServiceImplTest {
     private HistoryReportService historyReportService;
     @Mock
     private UploadImageService uploadImageService;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Mock
+    private CategoryService categoryService;
 
 
     @BeforeEach
@@ -110,11 +117,19 @@ class ReportServiceImplTest {
     // createReport
     @Test
     void createReport_success() throws IOException {
-        CreateReportDTO dto = new CreateReportDTO("desc", "userId", "title", "catId",
+
+        Category categoryMock = new Category();
+        categoryMock.setId(new ObjectId());
+        categoryMock.setName("Mock Category");
+        when(categoryRepository.findById("67f2357558e86a0f559b8e19")).thenReturn(Optional.of(categoryMock));
+
+        CreateReportDTO dto = new CreateReportDTO("desc", "67f2357558e86a0f559b8e11", "title", ObjectIdMapperUtil.map(categoryMock.getId()),
                 new LocationDTO(1.0f, 2.0f, "place", "desc"));
 
         MultipartFile photo = mock(MultipartFile.class);
         List<MultipartFile> photos = List.of(photo);
+
+
 
         Report report = new Report();
         report.setId(new ObjectId());
@@ -124,14 +139,16 @@ class ReportServiceImplTest {
         when(locationService.saveLocation(dto.location())).thenReturn(new Location());
         when(historyReportService.save(any())).thenReturn(new HistoryReport());
         when(uploadImageService.uploadFile(any())).thenReturn("http://img.com");
-        when(userRepository.findById("userId")).thenReturn(Optional.of(new User()));
-        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(report.getId().toString(), "desc", "title", "userId", "catId", "PENDIENTE"));
+        when(userRepository.findById("67f2357558e86a0f559b8e11")).thenReturn(Optional.of(new User()));
+        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(report.getId().toString(), "desc", "title", "userId", "67f2357558e86a0f559b8e19", "PENDIENTE"));
 
         ResponseDto body = (ResponseDto) reportService.createReport(dto, photos).getBody();
 
         assertEquals(200, body.getCodigo());
         assertEquals("Reporte guardado con éxito", body.getMensaje());
     }
+
+
 
     // updateReport
     @Test
