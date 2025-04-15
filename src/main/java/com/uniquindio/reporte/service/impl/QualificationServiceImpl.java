@@ -1,5 +1,6 @@
 package com.uniquindio.reporte.service.impl;
 
+import com.itextpdf.text.log.SysoCounter;
 import com.uniquindio.reporte.exceptions.NotFoundException;
 import com.uniquindio.reporte.mapper.QualificationMapper;
 import com.uniquindio.reporte.model.DTO.qualification.CreateQualificationDTO;
@@ -7,6 +8,7 @@ import com.uniquindio.reporte.model.DTO.qualification.UpdateQualificationDTO;
 import com.uniquindio.reporte.model.entities.Qualification;
 import com.uniquindio.reporte.model.enums.EnumStatusQualification;
 import com.uniquindio.reporte.repository.QualificationRepository;
+import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.service.QualificationService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import com.uniquindio.reporte.utils.ResponseDto;
@@ -25,15 +27,32 @@ public class QualificationServiceImpl implements QualificationService {
 
     private final QualificationRepository qualificationRepository;
     private final QualificationMapper qualificationMapper;
+    private final ReportRepository reportRepository;
 
     @Override
     public ResponseEntity<?> createQualification(CreateQualificationDTO dto) {
-        Qualification qualification = qualificationMapper.toEntity(dto);
-        qualification.setDateCreation(LocalDate.now());
-        qualificationRepository.save(qualification);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "Calificación creada con éxito", qualificationMapper.toDTO(qualification)));
+        try {
+            ObjectId reportObjectId = ObjectIdMapperUtil.map(dto.reportId());
+            boolean reportExists = reportRepository.existsById(reportObjectId);
+
+            if (!reportExists) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), "El reporte especificado no existe", null));
+            }
+
+            Qualification qualification = qualificationMapper.toEntity(dto);
+            qualification.setDateCreation(LocalDate.now());
+            qualificationRepository.save(qualification);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(HttpStatus.CREATED.value(), "Calificación creada con éxito", qualificationMapper.toDTO(qualification)));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno: " + e.getMessage(), null));
+        }
     }
+
 
     @Override
     public ResponseEntity<?> updateQualification(UpdateQualificationDTO dto) {
@@ -92,6 +111,7 @@ public class QualificationServiceImpl implements QualificationService {
 
     @Override
     public ResponseEntity<?> deleteQualification(String id) {
+        System.out.println("Intentando eliminar calificación con id: " + id);
         try {
             Qualification qualification = qualificationRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró la calificación con id: " + id));

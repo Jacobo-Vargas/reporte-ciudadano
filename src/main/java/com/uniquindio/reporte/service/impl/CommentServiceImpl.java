@@ -40,36 +40,38 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ResponseEntity<?> createComment(CreateCommentDTO createCommentDTO) {
-
-        Comment comment = commentMapper.toDocumentCreate(createCommentDTO);
-
         try {
+            ObjectId reportObjectId = ObjectIdMapperUtil.map(createCommentDTO.reportId());
+            Report reporte = reportRepository.findById(reportObjectId).orElse(null);
 
-            commentRepository.save(comment);
-            Report reporte = reportRepository.findById(ObjectIdMapperUtil.map(comment.getReportId())).orElse(null);
-            if (reporte != null) {
-                User creador = userRepository.findById(reporte.getUserId()).orElse(null);
-                User autorComentario = (User) userRepository.findById(comment.getUserId()).orElse(null);
-
-                if (creador != null && autorComentario != null) {
-                    emailService.enviarNotificacionComentario(
-                            creador.getEmail(),
-                            reporte.getTitle(),
-                            comment.getMessage(),  // o como sea que se llame el contenido
-                            autorComentario.getName()
-                    );
-                }
+            if (reporte == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), "El reporte no existe", null));
             }
 
+            Comment comment = commentMapper.toDocumentCreate(createCommentDTO);
+            commentRepository.save(comment);
 
-        }catch (Exception e){
+            User creador = userRepository.findById(reporte.getUserId()).orElse(null);
+            User autorComentario = (User) userRepository.findById(comment.getUserId()).orElse(null);
 
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(),"error interno",null));
+            if (creador != null && autorComentario != null) {
+                emailService.enviarNotificacionComentario(
+                        creador.getEmail(),
+                        reporte.getTitle(),
+                        comment.getMessage(),
+                        autorComentario.getName()
+                );
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(HttpStatus.CREATED.value(), "Comentario creado exitosamente", null));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "Error interno: " + e.getMessage(), null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Comentario creado exitosamente");
-
     }
-
 
 
     @Override
