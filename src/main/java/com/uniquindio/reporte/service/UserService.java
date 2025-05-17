@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 public interface UserService {
 
     ResponseEntity<?> sendCodeConfirmation(String email) throws Exception;
@@ -29,4 +31,6 @@ public interface UserService {
     ResponseEntity<?> addFollowerToUser(FollowerRequestDto dto)throws Exception;
 
     ResponseEntity<?> removeFollowerFromUser(FollowerRequestDto dto) throws Exception;
+
+    List<?> getCities()throws Exception;
 }

@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/createUser/**").permitAll()
                         .requestMatchers("/users/verifyEmailAndDocumentNumber").permitAll()
                         .requestMatchers("/users/changeUserPassword").permitAll()
+                        .requestMatchers("/users/getcities").permitAll()
                         .requestMatchers("/dev/**").permitAll()
                         .anyRequest().authenticated()
                 )
