@@ -39,41 +39,42 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Configura la seguridad HTTP para la aplicación
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 👈 Agregado
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/users/sendCodeConfirmation/**").permitAll()
                         .requestMatchers("/users/verifyAccountEmailCode").permitAll()
-                        .requestMatchers("/users/createUser/**").permitAll()  // <-- esta línea nueva
+                        .requestMatchers("/users/createUser/**").permitAll()
                         .requestMatchers("/users/verifyEmailAndDocumentNumber").permitAll()
                         .requestMatchers("/users/changeUserPassword").permitAll()
                         .requestMatchers("/dev/**").permitAll()
-                        .anyRequest().authenticated(
-                ))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint( new AutenticacionEntryPoint() ))
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new AutenticacionEntryPoint()))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        // Configura las políticas de CORS para permitir solicitudes desde el frontend
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedOriginPatterns(List.of("*")); // 👈 Acepta cualquier origen (solo para desarrollo)
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
-
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 
 
     @Bean
