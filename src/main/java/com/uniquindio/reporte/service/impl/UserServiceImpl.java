@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -320,4 +321,15 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok("Seguidor eliminado y puntaje actualizado");
     }
 
+    @Override
+    public List<?> getCities() throws Exception {
+        return Arrays.stream(EnumResidenceCity.values())
+                .map(Enum::name) // Si quieres los nombres tal cual en el enum
+                .collect(Collectors.toList());
+    }
+
+
+
 }
+
+
