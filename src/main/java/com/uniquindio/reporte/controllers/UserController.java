@@ -1,0 +1,114 @@
+package com.uniquindio.reporte.controllers;
+
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
+import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.register.FollowerRequestDto;
+import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.register.VerifyAccountEmailCodeDto;
+import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
+import com.uniquindio.reporte.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    //enviar codigo verificaion
+    @PostMapping("/sendCodeConfirmation/{email}")
+    public ResponseEntity<?> sendCodeConfirmation(@PathVariable String email) throws Exception {
+        return userService.sendCodeConfirmation(email);
+    }
+    //crear usuario
+    @PostMapping("/createUser/")
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO createUserDTO) throws Exception {
+        return userService.createUser(createUserDTO);
+    }
+    //verificar cuenta
+    @PutMapping("/verifyAccountEmailCode")
+    ResponseEntity<?> verifyAccountEmailCode(@RequestBody @Valid VerifyAccountEmailCodeDto verifyAccountEmailCodeDto) throws  Exception {
+        return userService.verifyAccountEmailCode(verifyAccountEmailCodeDto);
+    }
+
+    //actualizar usuario
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserDto updateUserDto) throws Exception {
+        return userService.updateUser(id,updateUserDto);
+    }
+
+
+    //  cambiar estado  de usuario
+    @PutMapping("status")
+    public ResponseEntity<?> changeUserStatus(@RequestBody @Valid ChangeUserStatusDto changeUserStatusDto) throws Exception {
+        return userService.changeUserStatus(changeUserStatusDto);
+    }
+
+
+    //obtener usuario por id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable String id) throws Exception {
+        return userService.getUser(id);
+    }
+
+    // obtener todos los usuarios
+    @GetMapping()
+    public ResponseEntity<?> getUsers() throws Exception {
+        return userService.getUsers();
+    }
+
+    @GetMapping("/verifyEmailAndDocumentNumber")
+    public  ResponseEntity<?> verifyEmailAndDocumentNumber(@RequestBody @Valid VerifyEmailAndDocumentNumberUserDto verifyEmailAndDocumentNumberUserDto)throws  Exception{
+        return userService.verifyEmailAndDocumentNumber(verifyEmailAndDocumentNumberUserDto);
+    }
+
+    @PutMapping("/changeUserPassword")
+    public  ResponseEntity<?>changeUserPassword(@RequestBody @Valid ChangeUserPassword changeUserPassword)throws  Exception{
+        return  userService.changeUserPassword(changeUserPassword);
+
+    }
+
+    @PutMapping("/addFollower")
+    public ResponseEntity<?> addFollowerToUser(@RequestBody FollowerRequestDto dto)throws Exception {
+        return userService.addFollowerToUser(dto);
+    }
+
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<?> removeFollower(@RequestBody FollowerRequestDto dto) {
+        try {
+            return userService.removeFollowerFromUser(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al intentar dejar de seguir: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/getcities")
+    public List<?> getCities() throws Exception {
+        return userService.getCities();
+    }
+
+
+
+
+
+
+
+}
