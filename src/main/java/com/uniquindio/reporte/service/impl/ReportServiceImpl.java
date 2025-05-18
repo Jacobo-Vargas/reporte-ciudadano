@@ -7,6 +7,7 @@ import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
+import com.uniquindio.reporte.model.entities.Category;
 import com.uniquindio.reporte.model.entities.HistoryReport;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.entities.User;
@@ -14,6 +15,7 @@ import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
 import com.uniquindio.reporte.repository.UserRepository;
+import com.uniquindio.reporte.service.CategoryService;
 import com.uniquindio.reporte.service.EmailService;
 import com.uniquindio.reporte.service.HistoryReportService;
 import com.uniquindio.reporte.service.ReportService;
@@ -26,13 +28,16 @@ import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -45,22 +50,53 @@ public class ReportServiceImpl implements ReportService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final HistoryReportService historyReportService;
+    private final UploadImageService uploadImageService;
+    private final CategoryService categoryService;
 
     @Override
-    public ResponseEntity<?> createReport(CreateReportDTO createReportDTO) {
+    @Transactional
+    public ResponseEntity<?> createReport(CreateReportDTO createReportDTO, List<MultipartFile> photos) throws IOException {
 
         Report report = reportMapper.toEntity(createReportDTO);
 
         report.setStatus(EnumStatusReport.PENDIENTE);
         report.setDateCreation(LocalDate.now());
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
+        try {
+            validateCategory(ObjectIdMapperUtil.map(report.getCategoryId()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage(), ObjectIdMapperUtil.map(report.getCategoryId())));
 
-        HistoryReport historyReport = historyReportService.save(new CreateHistoryReportDTO("Estado inicial, creado y pendiente de validación", createReportDTO.userId(), EnumStatusReport.PENDIENTE));
+        }
+
+
+        saveReport(report);
+
+        HistoryReport historyReport = historyReportService.save(
+                new CreateHistoryReportDTO(
+                        "Estado inicial, creado y pendiente de validación",
+                        createReportDTO.userId(),
+                        EnumStatusReport.PENDIENTE,
+                        report.getId().toString()
+                )
+        );
+
         List<HistoryReport> list = new ArrayList<>(1);
         list.add(historyReport);
-
         report.setHistory(list);
+
+        if (photos != null && !photos.isEmpty()) {
+            List<String> imageUrls = new ArrayList<>();
+            for (MultipartFile image : photos) {
+                String imageUrl = uploadImageService.uploadFile(image);
+                imageUrls.add(imageUrl);
+            }
+            report.setPhotos(imageUrls);
+        }
+
         saveReport(report);
+
         User creador = userRepository.findById(report.getUserId()).orElse(null);
         if (creador != null) {
             emailService.enviarConfirmacionCreacionReporte(
@@ -69,12 +105,12 @@ public class ReportServiceImpl implements ReportService {
             );
         }
 
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Reporte guardado con éxito", reportMapper.toDTO(report)));
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> updateReport(UpdateReportDTO updateReportDTO) {
 
         try {
@@ -105,12 +141,13 @@ public class ReportServiceImpl implements ReportService {
      }
 
     @Override
+    @Transactional
     public ResponseEntity<?> changeStatusReport(ChangeStatusReportDTO changeStatusReportDTO) {
         try {
             Report report = reportRepository.findById(ObjectIdMapperUtil.map(changeStatusReportDTO.id())).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(changeStatusReportDTO.id()))));
             boolean flag = validateChangeStatus(changeStatusReportDTO.status());
 
-            if (flag) {
+            if (!flag) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseDto(200, "No tiene permisos suficientes para cambiar el estado de el reporte.", null));
 
@@ -137,7 +174,7 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
             List<HistoryReport> list = report.getHistory();
-            list.add(historyReportService.save(new CreateHistoryReportDTO(changeStatusReportDTO.observation(), ObjectIdMapperUtil.map(report.getUserId()), EnumStatusReport.valueOf(changeStatusReportDTO.status()))));
+            list.add(historyReportService.save(new CreateHistoryReportDTO(changeStatusReportDTO.observation(), ObjectIdMapperUtil.map(report.getUserId()), EnumStatusReport.valueOf(changeStatusReportDTO.status()), report.getId().toString())));
             report.setHistory(list);
             report.setStatus(EnumStatusReport.valueOf(changeStatusReportDTO.status()));
             log.info("Actualizando reporte a nuevo estado {}", report.getStatus().name());
@@ -160,6 +197,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public void saveReport(Report report) {
         reportRepository.save(report);
         log.info("Reporte almacenado con éxito.");
@@ -181,6 +219,7 @@ public class ReportServiceImpl implements ReportService {
  }
 
     @Override
+    @Transactional
     public ResponseEntity<?> deleteReportById(String id) {
 
         try {
@@ -207,6 +246,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException {
 
         Report report = reportRepository.findById(ObjectIdMapperUtil.map(reportId)).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(reportId))));
@@ -226,5 +266,9 @@ public class ReportServiceImpl implements ReportService {
         } else {
             return true;
         }
+    }
+
+    private void validateCategory(String categoryId) throws NotFoundException {
+        categoryService.getCategoryById(categoryId);
     }
 }

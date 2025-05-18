@@ -13,4 +13,5 @@ public record CreateQualificationDTO(
         @NotNull(message = "El ID del usuario es obligatorio")
         String userId
 
-) {}
+) {
+}

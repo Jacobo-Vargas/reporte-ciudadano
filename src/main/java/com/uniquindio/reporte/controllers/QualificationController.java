@@ -26,8 +26,8 @@ public class QualificationController {
         return qualificationService.updateQualification(updateQualificationDTO);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id) {
         return qualificationService.deleteQualification(id);
     }
 

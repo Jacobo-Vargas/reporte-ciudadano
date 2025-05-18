@@ -30,7 +30,4 @@ public interface UserMapper {
 
     ResponseUserStatusDto toDocumentResponseUserStatus(User user);
 
-
-
-
 }

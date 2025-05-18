@@ -6,5 +6,6 @@ import jakarta.validation.constraints.NotNull;
 public record CreateHistoryReportDTO(
         @NotNull String observations,
         @NotNull String clienteId,
-        @NotNull EnumStatusReport enumStatusReport
+        @NotNull EnumStatusReport enumStatusReport,
+        @NotNull String reportId
 ) {}

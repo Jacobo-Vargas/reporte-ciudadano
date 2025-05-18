@@ -18,5 +18,4 @@ public record CreateCategoryDTO(
         String description
 
 ){
-
 }

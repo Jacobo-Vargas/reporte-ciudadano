@@ -1,15 +1,26 @@
 package com.uniquindio.reporte.controllers;
 
-import com.uniquindio.reporte.model.DTO.user.register.*;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserPassword;
+import com.uniquindio.reporte.model.DTO.user.register.ChangeUserStatusDto;
+import com.uniquindio.reporte.model.DTO.user.register.CreateUserDTO;
+import com.uniquindio.reporte.model.DTO.user.register.FollowerRequestDto;
+import com.uniquindio.reporte.model.DTO.user.register.UpdateUserDto;
+import com.uniquindio.reporte.model.DTO.user.register.VerifyAccountEmailCodeDto;
 import com.uniquindio.reporte.model.DTO.user.response.VerifyEmailAndDocumentNumberUserDto;
 import com.uniquindio.reporte.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.angus.mail.handlers.text_html;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -36,9 +47,6 @@ public class UserController {
     ResponseEntity<?> verifyAccountEmailCode(@RequestBody @Valid VerifyAccountEmailCodeDto verifyAccountEmailCodeDto) throws  Exception {
         return userService.verifyAccountEmailCode(verifyAccountEmailCodeDto);
     }
-
-
-
 
     //actualizar usuario
     @PutMapping("/{id}")

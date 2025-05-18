@@ -5,6 +5,7 @@ import com.uniquindio.reporte.mapper.NotificationMapper;
 import com.uniquindio.reporte.model.DTO.notification.CreateNotificationDTO;
 import com.uniquindio.reporte.model.DTO.notification.UpdateNotificationDTO;
 import com.uniquindio.reporte.model.entities.Notification;
+import com.uniquindio.reporte.model.enums.EnumStatusNotification;
 import com.uniquindio.reporte.repository.NotificationRepository;
 import com.uniquindio.reporte.service.NotificationService;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
@@ -43,6 +44,11 @@ public class NotificationServiceImpl implements NotificationService {
                     .findFirst()
                     .orElseThrow(() -> new NotFoundException("No se encontró notificación con ese usuario y reporte"));
 
+            if (notification.getStatus() == EnumStatusNotification.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(400, "Esta notificación ya fue eliminada", null));
+            }
+
             if (dto.message() != null) notification.setMessage(dto.message());
             if (dto.read() != null) notification.setRead(dto.read());
 
@@ -60,6 +66,12 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             Notification notification = notificationRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró la notificación con id: " + id));
+
+            if (notification.getStatus() == EnumStatusNotification.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDto(404, "Esta notificación ha sido eliminada", null));
+            }
+
             return ResponseEntity.ok(new ResponseDto(200, "Notificación obtenida", notificationMapper.toDTO(notification)));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -69,7 +81,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public ResponseEntity<?> getAllNotifications() {
-        List<Notification> list = notificationRepository.findAll();
+        List<Notification> list = notificationRepository.findAll().stream()
+                .filter(n -> n.getStatus() == EnumStatusNotification.ACTIVO)
+                .toList();
+
         return ResponseEntity.ok(new ResponseDto(200, "Notificaciones obtenidas con éxito", notificationMapper.toListDTO(list)));
     }
 
@@ -78,7 +93,15 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             Notification notification = notificationRepository.findById(ObjectIdMapperUtil.map(id))
                     .orElseThrow(() -> new NotFoundException("No se encontró la notificación con id: " + id));
-            notificationRepository.delete(notification);
+
+            if (notification.getStatus() == EnumStatusNotification.ELIMINADO) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseDto(400, "La notificación ya fue eliminada", null));
+            }
+
+            notification.setStatus(EnumStatusNotification.ELIMINADO);
+            notificationRepository.save(notification);
+
             return ResponseEntity.ok(new ResponseDto(200, "Notificación eliminada con éxito", null));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

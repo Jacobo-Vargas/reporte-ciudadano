@@ -50,5 +50,4 @@ public class CommentController {
         return commentService.getComments();
     }
 
-
 }
