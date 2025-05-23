@@ -32,8 +32,13 @@ public class CommentController {
 
     //eliminar comentario
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable ObjectId id) {
-        return commentService.deleteComment(id);
+    public ResponseEntity<?> deleteComment(@PathVariable String id) {
+        try {
+            ObjectId objectId = new ObjectId(id);
+            return commentService.deleteComment(objectId); // 🔁 ahora usa ObjectId
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("ID de comentario inválido");
+        }
     }
 
     //obtener comentario por id

@@ -23,7 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -107,8 +109,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponseEntity<?> deleteComment(ObjectId Id) {
-        Optional<Comment> optionalComment = commentRepository.findById(Id);
+    public ResponseEntity<?> deleteComment(ObjectId id) {
+        Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), "Comentario no encontrado", null));
@@ -119,11 +121,13 @@ public class CommentServiceImpl implements CommentService {
             comment.setStatus(EnumStatusComment.ELIMINADO);
             commentRepository.save(comment);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno", null));
         }
 
         return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Comentario eliminado lógicamente", null));
     }
+
 
     @Override
     public ResponseEntity<?> getComment(ObjectId id) {
@@ -161,12 +165,35 @@ public class CommentServiceImpl implements CommentService {
                 })
                 .toList();
 
-        if (comments.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(200, "No hay comentarios activos", List.of()));
-        }
+        // Construir lista con userName incluido
+        List<Map<String, Object>> comentariosConUsuario = comments.stream().map(c -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", c.getId().toHexString());
+            map.put("message", c.getMessage());
+            map.put("createdAt", c.getCreatedAt());
+            map.put("reportId", c.getReportId());
+            map.put("status", c.getStatus());
+            map.put("userId", c.getUserId());
 
-        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de comentarios activos obtenida", comments));
+            // 🔽 Buscar el usuario por ID (convertido de String a ObjectId)
+            Optional<User> userOpt = Optional.empty();
+            try {
+                ObjectId userId = new ObjectId(c.getUserId());
+                userOpt = userRepository.findById(userId);
+            } catch (IllegalArgumentException e) {
+                // Si el ID no es válido, dejamos userOpt vacío
+            }
+
+            // ✅ Agregar el nombre del usuario si existe, o "Desconocido"
+            map.put("userName", userOpt.map(User::getName).orElse("Desconocido"));
+
+            return map;
+        }).toList();
+
+
+        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de comentarios con nombre de usuario", comentariosConUsuario));
     }
+
 
     @Override
     public ResponseEntity<?> getCommentsByStatus(String status) {

@@ -16,6 +16,7 @@ public interface ReportMapper {
 
     Report toEntity(GeneralReportDTO generalReportDTO);
 
+    @Mapping(source = "dateCreation", target = "dateCreation")
     GeneralReportDTO toDTO(Report report);
 
     List<GeneralReportDTO> toListDTO (List<Report> listReport);

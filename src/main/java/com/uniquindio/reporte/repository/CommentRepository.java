@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends MongoRepository<Comment, ObjectId> {
 
-   Optional<Comment> findById(ObjectId id);
     boolean existsById(ObjectId id);
     void deleteById(ObjectId id);
+    Optional<Comment> findById(String id);
 }
