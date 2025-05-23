@@ -18,9 +18,13 @@ public interface CategoryService {
 
     ResponseEntity<?> getCategory(String name);
 
+    ResponseEntity<?> getCategoryByID(String id);
+
     ResponseEntity<?> getCategories();
 
     ResponseEntity<?> getCategoriesByStatus(String status);
 
     Category getCategoryById(String categoryId) throws NotFoundException;
 }
+
+

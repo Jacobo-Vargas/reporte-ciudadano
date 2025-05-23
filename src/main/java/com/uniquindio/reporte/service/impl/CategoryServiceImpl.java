@@ -115,6 +115,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public ResponseEntity<?> getCategoryByID(String id) {
+        try {
+            Category category = getCategoryById(id);
+            return ResponseEntity.ok(new ResponseDto(200, "Categoría encontrada", categoryMapper.toDTO(category)));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(404, e.getMessage(), null));
+        }
+    }
+
+
+    @Override
     public ResponseEntity<?> getCategories() {
         List<Category> categories = categoryRepository.findAll()
                 .stream()
@@ -145,6 +157,7 @@ public class CategoryServiceImpl implements CategoryService {
         return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Lista de categorías obtenida", categoriesR));
 
     }
+
 
     @Override
     public Category getCategoryById(String categoryId) throws NotFoundException {

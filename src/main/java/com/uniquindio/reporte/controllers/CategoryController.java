@@ -35,11 +35,18 @@ public class CategoryController {
         return categoryService.deleteCategory(name);
     }
 
-    //obtener categoria por id
-    @GetMapping("/{name}")
+    // Buscar por nombre
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getCategory(@PathVariable String name) {
         return categoryService.getCategory(name);
     }
+
+    // Buscar por ID
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getCategoryByID(@PathVariable String id) {
+        return categoryService.getCategoryByID(id);
+    }
+
 
     // obtener todos los usuarios
     @GetMapping()
