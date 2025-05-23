@@ -51,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
 
         String token = jwtUtils.generateToken(user.getId().toString(), crearClaims(user));
 
-        return new TokenDTO(token);
+        return new TokenDTO(token, user.getUserType().name());
     }
 
     private Map<String, String> crearClaims(User usuario) {
