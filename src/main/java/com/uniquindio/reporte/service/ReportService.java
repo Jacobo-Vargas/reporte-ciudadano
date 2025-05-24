@@ -6,6 +6,7 @@ import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,8 @@ public interface ReportService {
     ResponseEntity<?> getReportById(String id);
 
     ResponseEntity<?> deleteReportById(String id);
+
+    ResponseEntity<?> deleteReport(ObjectId id);
 
     ResponseEntity<?> getAllReportsByStatus(EnumStatusReport statusReport);
 

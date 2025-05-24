@@ -36,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,8 +47,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
-
-class ReportServiceImplTest {
+public class ReportServiceImplTest {
 
     @InjectMocks
     private ReportServiceImpl reportService;
@@ -92,7 +92,16 @@ class ReportServiceImplTest {
         Report report = new Report();
         report.setId(objectId);
 
-        GeneralReportDTO dto = new GeneralReportDTO(id, "desc", "title", "userId", "catId", "PENDIENTE");
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
+        GeneralReportDTO dto = new GeneralReportDTO(
+                "67f2357558e86a0f559b8e11",
+                "Reporta un problema de alumbrado",
+                "Alumbrado público apagado",
+                "userId123",
+                "catId456",
+                "PENDIENTE",
+                location,
+                LocalDate.of(2025, 5, 23));
 
         when(reportRepository.findById(objectId)).thenReturn(Optional.of(report));
         when(reportMapper.toDTO(report)).thenReturn(dto);
@@ -124,7 +133,7 @@ class ReportServiceImplTest {
         when(categoryRepository.findById("67f2357558e86a0f559b8e19")).thenReturn(Optional.of(categoryMock));
 
         CreateReportDTO dto = new CreateReportDTO("desc", "67f2357558e86a0f559b8e11", "title", ObjectIdMapperUtil.map(categoryMock.getId()),
-                new LocationDTO(1.0f, 2.0f, "place", "desc"));
+                new LocationDTO(1.0d, 2.0d, "place", "desc"));
 
         MultipartFile photo = mock(MultipartFile.class);
         List<MultipartFile> photos = List.of(photo);
@@ -134,13 +143,21 @@ class ReportServiceImplTest {
         Report report = new Report();
         report.setId(new ObjectId());
         report.setUserId(ObjectIdMapperUtil.map("67f2357558e86a0f559b8e11"));
-
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
         when(reportMapper.toEntity(dto)).thenReturn(report);
         when(locationService.saveLocation(dto.location())).thenReturn(new Location());
         when(historyReportService.save(any())).thenReturn(new HistoryReport());
         when(uploadImageService.uploadFile(any())).thenReturn("http://img.com");
         when(userRepository.findById("67f2357558e86a0f559b8e11")).thenReturn(Optional.of(new User()));
-        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(report.getId().toString(), "desc", "title", "userId", "67f2357558e86a0f559b8e19", "PENDIENTE"));
+        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(
+                "67f2357558e86a0f559b8e11",
+                "Reporta un problema de alumbrado",
+                "Alumbrado público apagado",
+                "userId123",
+                "catId456",
+                "PENDIENTE",
+                location,
+                LocalDate.of(2025, 5, 23)));
 
         ResponseDto body = (ResponseDto) reportService.createReport(dto, photos).getBody();
 
@@ -153,16 +170,25 @@ class ReportServiceImplTest {
     // updateReport
     @Test
     void updateReport_success() {
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
         String id = new ObjectId().toString();
         UpdateReportDTO dto = new UpdateReportDTO("PENDIENTE", "titulo",
-                new LocationDTO(1, 1, "loc", "desc"), id, "nueva descripcion");
+                new LocationDTO(1d, 1d, "loc", "desc"), id, "nueva descripcion");
 
         Report report = new Report();
         report.setId(new ObjectId(id));
 
         when(reportRepository.findById(any())).thenReturn(Optional.of(report));
         when(locationService.saveLocation(dto.location())).thenReturn(new Location());
-        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(id, "nueva descripcion", "titulo", "userId", "catId", "PENDIENTE"));
+        when(reportMapper.toDTO(report)).thenReturn(new GeneralReportDTO(
+                "67f2357558e86a0f559b8e11",
+                "Reporta un problema de alumbrado",
+                "Alumbrado público apagado",
+                "userId123",
+                "catId456",
+                "PENDIENTE",
+                location,
+                LocalDate.of(2025, 5, 23)));
 
         ResponseDto body = (ResponseDto) reportService.updateReport(dto).getBody();
 
@@ -173,7 +199,7 @@ class ReportServiceImplTest {
     @Test
     void updateReport_notFound() {
         UpdateReportDTO dto = new UpdateReportDTO("PENDIENTE", "title",
-                new LocationDTO(1, 1, "loc", "desc"), "67f2357558e86a0f559b8e17", "descripcion");
+                new LocationDTO(1d, 1d, "loc", "desc"), "67f2357558e86a0f559b8e17", "descripcion");
 
         when(reportRepository.findById(any())).thenReturn(Optional.empty());
 
@@ -209,10 +235,21 @@ class ReportServiceImplTest {
     // getReport
     @Test
     void getReport_success() {
+
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
+
         Report r = new Report();
         when(reportRepository.findAll()).thenReturn(List.of(r));
         when(reportMapper.toListDTO(any())).thenReturn(List.of(
-                new GeneralReportDTO("id", "desc", "title", "user", "cat", "PENDIENTE")
+                new GeneralReportDTO(
+                        "67f2357558e86a0f559b8e11",
+                        "Reporta un problema de alumbrado",
+                        "Alumbrado público apagado",
+                        "userId123",
+                        "catId456",
+                        "PENDIENTE",
+                        location,
+                        LocalDate.of(2025, 5, 23))
         ));
 
         ResponseEntity<?> response = reportService.getReport();
@@ -222,9 +259,18 @@ class ReportServiceImplTest {
     // getAllReportsByStatus
     @Test
     void getAllReportsByStatus_success() {
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
         when(reportRepository.findByStatus(EnumStatusReport.PENDIENTE.name())).thenReturn(List.of(new Report()));
         when(reportMapper.toListDTO(any())).thenReturn(List.of(
-                new GeneralReportDTO("id", "desc", "title", "user", "cat", "PENDIENTE")
+                new GeneralReportDTO(
+                        "67f2357558e86a0f559b8e11",
+                        "Reporta un problema de alumbrado",
+                        "Alumbrado público apagado",
+                        "userId123",
+                        "catId456",
+                        "PENDIENTE",
+                        location,
+                        LocalDate.of(2025, 5, 23))
         ));
 
         ResponseDto body = (ResponseDto) reportService.getAllReportsByStatus(EnumStatusReport.PENDIENTE).getBody();
@@ -236,13 +282,22 @@ class ReportServiceImplTest {
     // markAsImportant
     @Test
     void markAsImportant_success() throws NotFoundException {
+        LocationDTO location = new LocationDTO(4.624335, -74.063644, "Parque Central", "Parque principal de la ciudad");
         String id = new ObjectId().toString();
         Report report = new Report();
         report.setId(new ObjectId(id));
         report.setCounterImportant(0);
 
         when(reportRepository.findById(any())).thenReturn(Optional.of(report));
-        when(reportMapper.toDTO(any())).thenReturn(new GeneralReportDTO(id, "desc", "title", "user", "cat", "PENDIENTE"));
+        when(reportMapper.toDTO(any())).thenReturn(new GeneralReportDTO(
+                "67f2357558e86a0f559b8e11",
+                "Reporta un problema de alumbrado",
+                "Alumbrado público apagado",
+                "userId123",
+                "catId456",
+                "PENDIENTE",
+                location,
+                LocalDate.of(2025, 5, 23)));
 
         ResponseDto body = (ResponseDto) reportService.markAsImportant(id, true).getBody();
 

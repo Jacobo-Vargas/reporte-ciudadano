@@ -7,10 +7,8 @@ import com.uniquindio.reporte.model.DTO.report.ChangeStatusReportDTO;
 import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
-import com.uniquindio.reporte.model.entities.Category;
-import com.uniquindio.reporte.model.entities.HistoryReport;
-import com.uniquindio.reporte.model.entities.Report;
-import com.uniquindio.reporte.model.entities.User;
+import com.uniquindio.reporte.model.entities.*;
+import com.uniquindio.reporte.model.enums.EnumStatusComment;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
@@ -235,6 +233,27 @@ public class ReportServiceImpl implements ReportService {
         }
 
     }
+
+    @Override
+    public ResponseEntity<?> deleteReport(ObjectId id) {
+        Optional<Report> optionalReport = reportRepository.findById(id);
+        if (optionalReport.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), "Reporte no encontrado", null));
+        }
+
+        try {
+            Report report = optionalReport.get();
+            report.setStatus(EnumStatusReport.ELIMINADO);
+            reportRepository.save(report);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseDto(HttpStatus.BAD_REQUEST.value(), "error interno", null));
+        }
+
+        return ResponseEntity.ok(new ResponseDto(HttpStatus.OK.value(), "Reporte eliminado lógicamente", null));
+    }
+
 
     @Override
     public ResponseEntity<?> getAllReportsByStatus(EnumStatusReport status) {

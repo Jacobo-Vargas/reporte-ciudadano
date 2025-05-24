@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 public interface CommentService {
 
     ResponseEntity<?> createComment(CreateCommentDTO createCommentDTO);
-    ResponseEntity<?> updateComment(ObjectId Id,UpdateCommentDTO updateCommentDTO);
-    ResponseEntity<?> deleteComment(ObjectId Id);
-    ResponseEntity<?> getComment(ObjectId Id);
+    ResponseEntity<?> updateComment(ObjectId id,UpdateCommentDTO updateCommentDTO);
+    ResponseEntity<?> deleteComment(ObjectId id);
+    ResponseEntity<?> getComment(ObjectId id);
     ResponseEntity<?> getComments();
     ResponseEntity<?> getCommentsByStatus(String status);
 

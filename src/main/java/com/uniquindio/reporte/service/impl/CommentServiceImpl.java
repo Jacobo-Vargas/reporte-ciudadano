@@ -77,8 +77,8 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public ResponseEntity<?> updateComment(ObjectId Id, UpdateCommentDTO updateCommentDTO) {
-        Optional<Comment> optionalComment = commentRepository.findById(Id);
+    public ResponseEntity<?> updateComment(ObjectId id, UpdateCommentDTO updateCommentDTO) {
+        Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(404, "Comentario no encontrado", null));
