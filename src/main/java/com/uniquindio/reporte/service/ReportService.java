@@ -33,5 +33,4 @@ public interface ReportService {
 
     ResponseEntity<?> getAllReportsByStatus(EnumStatusReport statusReport);
 
-    ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException;
 }

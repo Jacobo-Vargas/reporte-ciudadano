@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,19 +14,20 @@ import java.util.List;
 @Data
 @Document(collection = "reports")
 public class Report {
-
     @EqualsAndHashCode.Include
     @Id
     private ObjectId id;
 
-    private List <HistoryReport> history;
+    private List<HistoryReport> history;
 
     @Field(name="date_creation")
-    private  LocalDate dateCreation;
+    private LocalDate dateCreation;
 
     private String description;
 
-    private int counterImportant;
+
+    @Field(name="important")
+    private Boolean important = false;
 
     @Field(name="userId")
     private ObjectId userId;
@@ -39,8 +39,7 @@ public class Report {
     @Field(name="category_id")
     private ObjectId categoryId;
 
-    private  List<String> photos;
+    private List<String> photos;
 
     private EnumStatusReport status;
-
 }

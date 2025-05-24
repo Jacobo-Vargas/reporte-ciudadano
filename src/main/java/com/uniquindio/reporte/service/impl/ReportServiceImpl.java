@@ -8,7 +8,6 @@ import com.uniquindio.reporte.model.DTO.report.CreateReportDTO;
 import com.uniquindio.reporte.model.DTO.report.GeneralReportDTO;
 import com.uniquindio.reporte.model.DTO.report.UpdateReportDTO;
 import com.uniquindio.reporte.model.entities.*;
-import com.uniquindio.reporte.model.enums.EnumStatusComment;
 import com.uniquindio.reporte.model.enums.reports.EnumStatusReport;
 import com.uniquindio.reporte.model.enums.users.EnumUserType;
 import com.uniquindio.reporte.repository.ReportRepository;
@@ -60,14 +59,15 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(EnumStatusReport.PENDIENTE);
         report.setDateCreation(LocalDate.now());
         report.setLocation(locationService.saveLocation(createReportDTO.location()));
+
+        report.setImportant(createReportDTO.isImportant() != null ? createReportDTO.isImportant() : false);
+
         try {
             validateCategory(ObjectIdMapperUtil.map(report.getCategoryId()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage(), ObjectIdMapperUtil.map(report.getCategoryId())));
-
         }
-
 
         saveReport(report);
 
@@ -106,6 +106,7 @@ public class ReportServiceImpl implements ReportService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Reporte guardado con éxito", reportMapper.toDTO(report)));
     }
+
 
     @Override
     @Transactional
@@ -262,17 +263,6 @@ public class ReportServiceImpl implements ReportService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(200, "Datos obtenidos con éxito", dataFiltered));
 
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> markAsImportant(String reportId, boolean isImportant) throws NotFoundException {
-
-        Report report = reportRepository.findById(ObjectIdMapperUtil.map(reportId)).orElseThrow(() -> new  NotFoundException("No se encontró un reporte con id : ".concat(String.valueOf(reportId))));
-        report.setCounterImportant(isImportant ? report.getCounterImportant() + 1 : report.getCounterImportant() -1 );
-        saveReport(report);
-        ResponseDto responseDto = new ResponseDto(HttpStatus.OK.value(), "El reporte se actualizó con éxito", reportMapper.toDTO(report));
-        return ResponseEntity.status(responseDto.getCodigo()).body(responseDto);
     }
 
 

@@ -74,10 +74,6 @@ public class ReportController {
         return reportService.getAllReportsByStatus(EnumStatusReport.valueOf(status));
     }
 
-    @PutMapping("/markImportant")
-    public ResponseEntity<?> markAsImportant(@RequestParam String reportId, @RequestParam boolean isImportant) throws NotFoundException {
-        return reportService.markAsImportant(reportId, isImportant);
-    }
 }
 
 

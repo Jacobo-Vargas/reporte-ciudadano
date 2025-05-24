@@ -6,5 +6,6 @@ public record CreateReportDTO(String description,
                               String userId,
                               String title,
                               String categoryId,
+                              Boolean isImportant,
                               LocationDTO location) {
 }

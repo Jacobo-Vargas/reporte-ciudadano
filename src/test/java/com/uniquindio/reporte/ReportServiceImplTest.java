@@ -286,7 +286,7 @@ public class ReportServiceImplTest {
         String id = new ObjectId().toString();
         Report report = new Report();
         report.setId(new ObjectId(id));
-        report.setCounterImportant(0);
+        report.setIsImportant(0);
 
         when(reportRepository.findById(any())).thenReturn(Optional.of(report));
         when(reportMapper.toDTO(any())).thenReturn(new GeneralReportDTO(

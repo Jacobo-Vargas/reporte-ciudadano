@@ -7,20 +7,20 @@ import com.uniquindio.reporte.model.entities.Report;
 import com.uniquindio.reporte.utils.ObjectIdMapperUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ObjectIdMapperUtil.class, LocationMapper.class})
 public interface ReportMapper {
 
-
     Report toEntity(GeneralReportDTO generalReportDTO);
 
     @Mapping(source = "dateCreation", target = "dateCreation")
+    @Mapping(source = "important", target = "isImportant")
     GeneralReportDTO toDTO(Report report);
 
-    List<GeneralReportDTO> toListDTO (List<Report> listReport);
+    List<GeneralReportDTO> toListDTO(List<Report> listReport);
 
+    @Mapping(source = "isImportant", target = "important")
     Report toEntity(CreateReportDTO createReportDTO);
 
     Report toEntity(UpdateReportDTO updateReportDTO);

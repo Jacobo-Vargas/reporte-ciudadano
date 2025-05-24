@@ -10,6 +10,7 @@ public record GeneralReportDTO(String id,
                                String userId,
                                String categoryId,
                                String status,
+                               Boolean isImportant,
                                LocationDTO location,
                                LocalDate dateCreation) {
 }
